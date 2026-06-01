@@ -23,15 +23,12 @@ define([], function () {
         var status = params && params.status ? params.status : '';
         var deliveryTo = params && params.deliveryTo ? params.deliveryTo : null;
 
-        // ============================
         // STATUS DATE (data da atualização)
-        // ============================
+
         var statusDate = new Date();
 
-        // ============================
         // ESTIMATED DELIVERY DATE
         // (independente do campo name)
-        // ============================
         var estimatedDateObj = null;
         var estimatedDateText = null;
 
@@ -51,22 +48,11 @@ define([], function () {
         }
 
         // Fallback: se API não retornar estimated, usa a data da atualização
-        if (!estimatedDateObj) {
-            estimatedDateObj = statusDate;
-        }
 
-        // ============================
-        // NAME (regra independente)
-        // ============================
-        var name = status;
 
-        if (estimatedDateText) {
-            name = status + ' - Estimated Date: ' + estimatedDateText;
-        }
 
-        // ============================
+
         // HISTORICAL (texto puro)
-        // ============================
         var historicalText = '';
 
         if (params && params.historicalData) {
@@ -77,13 +63,17 @@ define([], function () {
             }
         }
 
-        return {
-            name: name,
+        var payload = {
             custrecord_pd_tno_status: status,
             custrecord_pd_tno_status_date: statusDate,
-            custrecord_pd_tno_estimated_delivery_dat: estimatedDateObj,
             custrecord_pd_tno_historical: historicalText
         };
+
+        if (estimatedDateObj) {
+            payload.custrecord_pd_tno_estimated_delivery_dat = estimatedDateObj;
+        }
+
+        return payload;
     }
 
     return {

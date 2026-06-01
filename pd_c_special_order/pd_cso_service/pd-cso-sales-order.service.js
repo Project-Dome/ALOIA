@@ -49,7 +49,8 @@ define([
         memo: { name: 'memo' },
         urgencyOrder: { name: 'custbody_aae_urgency_order', type: 'list' },
         custPoReceipt: { name: 'custbody_aae_cust_po_receipt' },
-        buyer: { name: 'custbody_aae_buyer', type: 'list' }
+        buyer: { name: 'custbody_aae_buyer', type: 'list' },
+        soQt: { name: 'custbody_so_qt' }
     };
 
     const ITEM_SUBLIST_ID = 'item';
@@ -1141,7 +1142,7 @@ define([
             });
 
             _salesOrderRecord.save({
-                enableSourcing: true,
+                enableSourcing: false,
                 ignoreMandatoryFields: true
             });
 

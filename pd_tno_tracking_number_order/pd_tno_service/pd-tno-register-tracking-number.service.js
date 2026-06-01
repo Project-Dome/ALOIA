@@ -31,9 +31,10 @@ define([
 
     const API_URL = 'https://api.17track.net/track/v2.4/register';
 
-    
+
     const API_TOKEN = '06DFC2BE751424BCF3B7EE9481C64058';
 
+    // ^Tracking number pela PO - Início
     function registerTrackingNumbers(poId) {
         try {
 
@@ -238,9 +239,81 @@ define([
             };
         }
     }
+    // ^Tracking number pela PO - Início
+
+    function registerInboundTrackingNumber(trackingNumber, carrierCode) {
+        try {
+            if (!trackingNumber || !carrierCode) {
+                log.error('registerInboundTrackingNumber', {
+                    message: 'Missing trackingNumber or carrierCode.',
+                    trackingNumber: trackingNumber,
+                    carrierCode: carrierCode
+                });
+
+                return {
+                    success: false,
+                    responseRegister: null,
+                    parsedBody: null
+                };
+            }
+
+            var payloadRegister = [
+                {
+                    number: trackingNumber,
+                    carrier: carrierCode
+                }
+            ];
+
+            log.audit('registerInboundTrackingNumber - payloadRegister', payloadRegister);
+
+            var responseRegister = https.post({
+                url: API_URL,
+                headers: {
+                    'Content-Type': 'application/json',
+                    '17token': API_TOKEN
+                },
+                body: JSON.stringify(payloadRegister)
+            });
+
+            log.audit('registerInboundTrackingNumber - REGISTER response', {
+                status: responseRegister.code,
+                body: responseRegister.body
+            });
+
+            var parsedBody = null;
+
+            try {
+                parsedBody = responseRegister && responseRegister.body
+                    ? JSON.parse(responseRegister.body)
+                    : null;
+            } catch (parseError) {
+                log.error('registerInboundTrackingNumber - erro parse JSON', {
+                    error: parseError,
+                    body: responseRegister ? responseRegister.body : null
+                });
+            }
+
+            return {
+                success: !!(parsedBody && parsedBody.code === 0),
+                responseRegister: responseRegister,
+                parsedBody: parsedBody
+            };
+
+        } catch (error) {
+            log.error('registerInboundTrackingNumber - erro inesperado', error);
+
+            return {
+                success: false,
+                responseRegister: null,
+                parsedBody: null
+            };
+        }
+    }
+
 
     return {
-        registerTrackingNumbers: registerTrackingNumbers
+        registerTrackingNumbers: registerTrackingNumbers,
+        registerInboundTrackingNumber: registerInboundTrackingNumber
     };
 
 });

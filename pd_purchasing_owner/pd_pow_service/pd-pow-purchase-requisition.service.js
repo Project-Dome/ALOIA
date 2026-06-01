@@ -97,14 +97,14 @@ define(
                     }
 
                     // Se redistribuir: decrementa contador do buyer atual
-                    let oldCount = parseInt(employeeRec.getValue({ fieldId: 'custentity_pd_pow_prs_assigned_today' })) || 0;
-                    if (oldCount > 0) {
-                        employeeRec.setValue({
-                            fieldId: 'custentity_pd_pow_prs_assigned_today',
-                            value: oldCount - 1
-                        });
-                        employeeRec.save({ enableSourcing: false, ignoreMandatoryFields: true });
-                    }
+                    // let oldCount = parseInt(employeeRec.getValue({ fieldId: 'custentity_pd_pow_prs_assigned_today' })) || 0;
+                    // if (oldCount > 0) {
+                    //     employeeRec.setValue({
+                    //         fieldId: 'custentity_pd_pow_prs_assigned_today',
+                    //         value: oldCount - 1
+                    //     });
+                    //     employeeRec.save({ enableSourcing: false, ignoreMandatoryFields: true });
+                    // }
                 }
 
                 // 3) Recupera compradores elegíveis
@@ -126,7 +126,7 @@ define(
                 updatePRBuyer(idPurchaseResquistion, _chosen.id);
 
                 // 7) Incrementa contador do novo buyer
-                incrementBuyerCounter(_chosen.id);
+                // incrementBuyerCounter(_chosen.id);
 
                 log.debug({
                     title: 'assignBuyerToPR - buyer atribuído/redistribuído',

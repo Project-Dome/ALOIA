@@ -9,6 +9,8 @@ define(
         'N/record',
         'N/runtime',
 
+        '../pd_cso_service/pd-cso-sales-order.service',
+
         '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-search.util.js',
         '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-record.util.js',
 
@@ -19,6 +21,8 @@ define(
             log,
             record,
             runtime,
+
+            sales_order_service,
 
             search_util,
             record_util
@@ -37,6 +41,9 @@ define(
             memo: { name: 'memo' },
             urgencyOrder: { name: 'custbody_aae_urgency_order', type: 'list' },
             vendor: { name: 'entity' },
+            createdFrom: { name: 'createdfrom' },
+            soQt: { name: 'custbody_so_qt' }
+
         };
 
         const ITEM_SUBLIST_ID = 'item';
@@ -359,7 +366,271 @@ define(
             }
         }
 
+        function populateFromSalesOrder(options) {
+            try {
+                const _poRecord = options && options.poRecord;
 
+                if (!_poRecord) {
+                    log.debug({
+                        title: 'populateFromSalesOrder - poRecord não informado',
+                        details: options
+                    });
+                    return false;
+                }
+
+                const _createdFrom = _poRecord.getValue({
+                    fieldId: 'createdfrom'
+                });
+
+                if (!_createdFrom) {
+                    log.debug({
+                        title: 'populateFromSalesOrder - createdfrom vazio',
+                        details: _poRecord.id || '[novo registro]'
+                    });
+                    return false;
+                }
+
+                // SO QT vindo da Purchase Requisition
+                try {
+
+                    const _purchaseRequisitionRecord = record.load({
+                        type: record.Type.PURCHASE_REQUISITION,
+                        id: _createdFrom,
+                        isDynamic: false
+                    });
+
+                    const _soQt = _purchaseRequisitionRecord.getValue({
+                        fieldId: FIELDS.soQt.name
+                    });
+
+                    if (_soQt !== null && _soQt !== undefined && _soQt !== '') {
+
+                        _poRecord.setValue({
+                            fieldId: FIELDS.soQt.name,
+                            value: _soQt
+                        });
+                    }
+
+                } catch (_e) {
+
+                    log.debug({
+                        title: 'populateFromSalesOrder - não foi possível obter SO QT da PR',
+                        details: _e
+                    });
+                }
+
+
+                const _salesOrderRecord = record.load({
+                    type: record.Type.SALES_ORDER,
+                    id: _createdFrom,
+                    isDynamic: false
+                });
+
+                const _salesOrderData = sales_order_service.readData(_salesOrderRecord);
+
+                if (!_salesOrderData || !_salesOrderData.itemList || !_salesOrderData.itemList.length) {
+                    log.debug({
+                        title: 'populateFromSalesOrder - SO sem itemList válida',
+                        details: _createdFrom
+                    });
+                    return false;
+                }
+
+                // Indexa linhas da SO por lineReference
+                let _salesOrderLineMap = {};
+
+                (_salesOrderData.itemList || []).forEach(function (_line) {
+                    const _lineReference = _line.lineReference || _line.custcol_pd_cso_line_reference;
+
+                    if (_lineReference) {
+                        _salesOrderLineMap[_lineReference] = _line;
+                    }
+                });
+
+                const _lineCount = _poRecord.getLineCount({
+                    sublistId: ITEM_SUBLIST_ID
+                }) || 0;
+
+                // Campo body da PO vinculado à SO
+                if (FIELDS.salesOrder && FIELDS.salesOrder.name && _salesOrderData.id) {
+                    try {
+                        _poRecord.setValue({
+                            fieldId: FIELDS.salesOrder.name,
+                            value: _salesOrderData.id
+                        });
+                    } catch (_e) {
+                        log.debug({
+                            title: 'populateFromSalesOrder - não foi possível setar salesOrder no body',
+                            details: _e
+                        });
+                    }
+                }
+
+                // Buyer body -> linha buyer da PO
+                let _buyerBody = null;
+                if (_salesOrderData.buyer) {
+                    _buyerBody = _salesOrderData.buyer.id || _salesOrderData.buyer;
+                }
+
+
+
+                for (let i = 0; i < _lineCount; i++) {
+                    try {
+                        const _lineReference = _poRecord.getSublistValue({
+                            sublistId: ITEM_SUBLIST_ID,
+                            fieldId: ITEM_SUBLIST_FIELDS.lineReference.name,
+                            line: i
+                        });
+
+                        if (!_lineReference) {
+                            continue;
+                        }
+
+                        const _salesOrderLine = _salesOrderLineMap[_lineReference];
+
+                        if (!_salesOrderLine) {
+                            continue;
+                        }
+
+                        let _itemData = {};
+
+                        // 1) item
+                        if (ITEM_SUBLIST_FIELDS.item && _salesOrderLine.item) {
+                            _itemData[ITEM_SUBLIST_FIELDS.item.name] =
+                                _salesOrderLine.item.id || _salesOrderLine.item;
+                        }
+
+                        // 2) partNumberCustomer
+                        if (ITEM_SUBLIST_FIELDS.partNumberCustomer && _salesOrderLine.partNumberCustomer) {
+                            _itemData[ITEM_SUBLIST_FIELDS.partNumberCustomer.name] =
+                                _salesOrderLine.partNumberCustomer;
+                        }
+
+                        // 3) lineReference
+                        if (ITEM_SUBLIST_FIELDS.lineReference && _lineReference) {
+                            _itemData[ITEM_SUBLIST_FIELDS.lineReference.name] = _lineReference;
+                        }
+
+                        // 4) custPoReceipt
+                        if (ITEM_SUBLIST_FIELDS.custPoReceipt && _salesOrderData.custPoReceipt) {
+                            _itemData[ITEM_SUBLIST_FIELDS.custPoReceipt.name] =
+                                _salesOrderData.custPoReceipt;
+                        }
+
+                        // 5) buyer
+                        if (ITEM_SUBLIST_FIELDS.buyer && _buyerBody) {
+                            _itemData[ITEM_SUBLIST_FIELDS.buyer.name] = _buyerBody;
+                        }
+
+                        // 6) estimatedCostTot
+                        if (ITEM_SUBLIST_FIELDS.estimatedCostTot && _salesOrderLine.estimatedCostTot) {
+                            _itemData[ITEM_SUBLIST_FIELDS.estimatedCostTot.name] =
+                                _salesOrderLine.estimatedCostTot;
+                        }
+
+                        // 7) idSalesOrder
+                        if (ITEM_SUBLIST_FIELDS.idSalesOrder && _salesOrderData.id) {
+                            _itemData[ITEM_SUBLIST_FIELDS.idSalesOrder.name] = _salesOrderData.id;
+                        }
+
+                        // 8) rate
+                        if (ITEM_SUBLIST_FIELDS.rate) {
+                            const _rateValue =
+                                _salesOrderLine.rate ||
+                                _salesOrderLine.estimatedRate ||
+                                _salesOrderLine.lastPurchasePrice;
+
+                            if (_rateValue !== null && _rateValue !== undefined && _rateValue !== '') {
+                                _itemData[ITEM_SUBLIST_FIELDS.rate.name] = _rateValue;
+                            }
+                        }
+
+                        // 9) linkedOrder
+                        // Não preencher a partir da SO neste momento.
+                        // Campo mantido fora da configuração porque pertence ao vínculo com PR.
+
+                        // 10) grossAmt
+                        // Não preencher na criação a partir da SO.
+                        // Esse valor tende a ser final/resultado da própria PO.
+
+                        // 11) finalCostPoUn
+                        // Não preencher na criação a partir da SO.
+                        // Esse valor será tratado depois no fluxo da própria PO.
+
+                        Object.keys(_itemData).forEach(function (_fieldId) {
+                            const _value = _itemData[_fieldId];
+
+                            if (_value === null || _value === undefined || _value === '') {
+                                return;
+                            }
+
+                            try {
+                                _poRecord.setSublistValue({
+                                    sublistId: ITEM_SUBLIST_ID,
+                                    fieldId: _fieldId,
+                                    line: i,
+                                    value: _value
+                                });
+                            } catch (_setError) {
+                                log.debug({
+                                    title: 'populateFromSalesOrder - campo ignorado no setSublistValue',
+                                    details: {
+                                        line: i,
+                                        fieldId: _fieldId,
+                                        value: _value,
+                                        error: _setError
+                                    }
+                                });
+                            }
+                        });
+
+                    } catch (_lineError) {
+                        log.debug({
+                            title: 'populateFromSalesOrder - erro tratado por linha',
+                            details: {
+                                line: i,
+                                error: _lineError
+                            }
+                        });
+                    }
+                }
+
+                return true;
+
+            } catch (error) {
+                log.error({
+                    title: 'populateFromSalesOrder - erro',
+                    details: error
+                });
+                return false;
+            }
+        }
+
+        function getSalesOrderIdFromPurchaseOrderBody(poData) {
+            try {
+                if (!poData) {
+                    return null;
+                }
+
+                if (poData.salesOrder) {
+                    return poData.salesOrder;
+                }
+
+                if (poData.createdFrom) {
+                    return poData.createdFrom;
+                }
+
+                return null;
+
+            } catch (error) {
+                log.error({
+                    title: 'getSalesOrderIdFromPurchaseOrderBody - error',
+                    details: error
+                });
+
+                return null;
+            }
+        }
 
         return {
             getVendor: getVendor,
@@ -370,6 +641,8 @@ define(
             updateFinalCostPoUnFromRate: updateFinalCostPoUnFromRate,
             purchaseOrderData: purchaseOrderData,
             purchOrderRecords: purchOrderRecords,
-            buildPurchaseOrderToSalesOrderSyncPayload: buildPurchaseOrderToSalesOrderSyncPayload
+            buildPurchaseOrderToSalesOrderSyncPayload: buildPurchaseOrderToSalesOrderSyncPayload,
+            populateFromSalesOrder: populateFromSalesOrder,
+            getSalesOrderIdFromPurchaseOrderBody: getSalesOrderIdFromPurchaseOrderBody
         }
     });

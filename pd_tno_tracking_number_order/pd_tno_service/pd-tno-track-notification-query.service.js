@@ -12,41 +12,32 @@ define([
     log
 ) {
 
-    function existsNotification(carrierCode, trackingNumber) {
-        log.debug('linha 16 - existsNotification - carrierCode', carrierCode);
+    //^ Início - Function PO - excluir  após validação
+    function existsNotification( trackingNumber) {
         log.debug('linha 17 - existsNotification - trackingNumber', trackingNumber);
 
         try {
-            if (!carrierCode || !trackingNumber) {
+            if (!trackingNumber) {
                 return {
                     exists: false,
                     notificationId: null
                 };
             }
 
-            // var sql = `
-            //     SELECT id
-            //     FROM customrecord_pd_tno_track_notification
-            //     WHERE custrecord_pd_tno_tracking_number = ?
-            //       AND custrecord_pd_tno_carrier = ?
-            //     ORDER BY id DESC
-            // `;
-
             var sql = `
                 SELECT id
                 FROM customrecord_pd_tno_track_notification
-                WHERE custrecord_pd_tno_tracking_number = ?
+                WHERE name = ?
                 ORDER BY id DESC
             `;
 
             var resultSet = query.runSuiteQL({
                 query: sql,
-                // params: [trackingNumber, carrierCode]
                 params: [trackingNumber]
             });
 
             var results = resultSet.asMappedResults() || [];
-            log.debug('linha 48 - existsNotification - results', results);
+            log.debug('linha 40 - existsNotification - results', results);
 
             if (results.length > 0 && results[0].id) {
                 return {
@@ -72,8 +63,117 @@ define([
             };
         }
     }
+    //^ Fim - Function PO - excluir  após validação
+
+
+
+    //* Início- Atuando inbound shipment 
+    function getInboundTrackingNotification(inboundShipmentId) {
+        try {
+            if (!inboundShipmentId) {
+                return null;
+            }
+
+            var sql = `
+                SELECT 
+                    ibs.custrecord_tracking,
+                    trk.id AS id_17_trk_notif,
+                    trk.name,
+                    trk.custrecord_pd_tno_carrier,
+                    car.name AS carrier,
+                    car.custrecord_pd_17track_carrier_code
+                FROM inboundShipment ibs
+                INNER JOIN customrecord_pd_tno_track_notification trk 
+                ON trk.id = ibs.custrecord_tracking
+                INNER JOIN customrecord_pd_17track_carriers car 
+                ON car.id = trk.custrecord_pd_tno_carrier
+                WHERE ibs.id = ?
+        `;
+
+            var resultSet = query.runSuiteQL({
+                query: sql,
+                params: [inboundShipmentId]
+            });
+
+            var results = resultSet.asMappedResults() || [];
+
+            if (!results.length) {
+                return null;
+            }
+
+            return {
+                trackingRecordId: results[0].custrecord_tracking,
+                notificationId: results[0].id_17_trk_notif,
+                trackingNumber: results[0].name,
+                carrierId: results[0].custrecord_pd_tno_carrier,
+                carrierName: results[0].carrier,
+                carrierCode: results[0].custrecord_pd_17track_carrier_code
+            };
+
+        } catch (e) {
+            log.error({
+                title: 'getInboundTrackingNotification - erro',
+                details: e
+            });
+
+            return null;
+        }
+    }
+    //* fim - Atuando inbound shipment 
+
+    function getTrackNotificationData(notificationId) {
+        try {
+            if (!notificationId) {
+                return null;
+            }
+
+            var sql = `
+            SELECT
+                trk.id AS id_17_trk_notif,
+                trk.name AS tracking_number,
+                trk.custrecord_pd_tno_carrier,
+                car.name AS carrier,
+                car.custrecord_pd_17track_carrier_code AS carrier_code
+            FROM customrecord_pd_tno_track_notification trk
+            INNER JOIN customrecord_pd_17track_carriers car 
+                ON car.id = trk.custrecord_pd_tno_carrier
+            WHERE trk.id = ?
+        `;
+
+            var resultSet = query.runSuiteQL({
+                query: sql,
+                params: [notificationId]
+            });
+
+            var results = resultSet.asMappedResults() || [];
+
+            if (!results.length) {
+                return null;
+            }
+
+            return {
+                notificationId: results[0].id_17_trk_notif,
+                trackingNumber: results[0].tracking_number,
+                carrierId: results[0].custrecord_pd_tno_carrier,
+                carrierName: results[0].carrier,
+                carrierCode: results[0].carrier_code
+            };
+
+        } catch (e) {
+            log.error({
+                title: 'getTrackNotificationData - erro',
+                details: e
+            });
+
+            return null;
+        }
+    }
+
 
     return {
-        existsNotification: existsNotification
+        existsNotification: existsNotification,
+        getInboundTrackingNotification: getInboundTrackingNotification,
+        getTrackNotificationData:getTrackNotificationData
+
     };
 });

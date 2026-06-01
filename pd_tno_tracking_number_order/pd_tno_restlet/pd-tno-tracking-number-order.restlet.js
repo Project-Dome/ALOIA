@@ -41,7 +41,7 @@ define(
 
                 // 2) Busca o custom record (retorna { exists, notificationId })
                 var existsResult = track_notification_query_service.existsNotification(
-                    parsed.carrier,
+                    // parsed.carrier,
                     parsed.trackingNumber
                 );
 

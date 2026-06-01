@@ -43,6 +43,7 @@ define(
             buyer: { name: 'custbody_aae_buyer' },
             urgencyOrder: { name: 'custbody_aae_urgency_order' }, // só setar se houver valor
             calculateTax: { name: 'custbody_ste_use_tax' },
+            soQt: { name: 'custbody_so_qt' }
         };
 
         const ITEM_SUBLIST_ID = 'item';
@@ -206,6 +207,10 @@ define(
                 // urgência: só setar se houver valor (evita INVALID_FLD_VALUE null)
                 if (options.urgencyOrder !== null && options.urgencyOrder !== undefined && options.urgencyOrder !== '') {
                     _purchaseRequisitionData[FIELDS.urgencyOrder.name] = options.urgencyOrder;
+                }
+
+                if (options.soQt !== null && options.soQt !== undefined && options.soQt !== '') {
+                    _purchaseRequisitionData[FIELDS.soQt.name] = options.soQt;
                 }
 
                 // due date da PR <= SO.custbody_aae_cust_po_receipt

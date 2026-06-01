@@ -25,9 +25,7 @@ define([], function () {
             var timeIso = String(stage.time_iso);
             var parts = timeIso.split('T');
 
-            // ============================
             // DATE → MM/DD/YYYY
-            // ============================
             var rawDate = parts[0] || ''; // YYYY-MM-DD
             var date = rawDate;
 
@@ -38,17 +36,13 @@ define([], function () {
                 }
             }
 
-            // ============================
             // HOUR → somente HH:MM
-            // ============================
             var hour = '';
             if (parts[1]) {
                 hour = parts[1].substring(0, 5);
             }
 
-            // ============================
             // FORMATO FINAL (linha única)
-            // ============================
             lines.push(
                 stage.key_stage + ' - ' + date + ' - ' + hour
             );

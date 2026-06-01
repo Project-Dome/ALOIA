@@ -22,7 +22,7 @@ define([
         const oldRec = context.oldRecord;
         const oldBuyer = oldRec && oldRec.getValue({ fieldId: 'custbody_aae_buyer' });
         if (oldBuyer) {
-          _decrementCounterSafe(oldBuyer);
+          // _decrementCounterSafe(oldBuyer);
           log.audit('Contador atualizado (DELETE)', `Buyer ${oldBuyer} - PR ${oldRec.id}`);
         }
         return;
@@ -38,20 +38,20 @@ define([
 
         // buyer removido
         if (oldBuyer && !newBuyer) {
-          _decrementCounterSafe(oldBuyer);
+          // _decrementCounterSafe(oldBuyer);
           log.audit('Contador atualizado (buyer removido)', `Buyer ${oldBuyer} - PR ${newRec.id}`);
         }
 
         // buyer trocado
         if (oldBuyer && newBuyer && String(oldBuyer) !== String(newBuyer)) {
-          _decrementCounterSafe(oldBuyer);
-          _incrementCounterSafe(newBuyer);
+          // _decrementCounterSafe(oldBuyer);
+          // _incrementCounterSafe(newBuyer);
           log.audit('Contador atualizado (buyer trocado)', `De ${oldBuyer} para ${newBuyer} - PR ${newRec.id}`);
         }
 
         // buyer definido na criação manual
         if (!oldBuyer && newBuyer && type === UE.CREATE) {
-          _incrementCounterSafe(newBuyer);
+          // _incrementCounterSafe(newBuyer);
           log.audit('Contador atualizado (buyer definido na criação)', `Buyer ${newBuyer} - PR ${newRec.id}`);
         }
       }
@@ -94,35 +94,35 @@ define([
       }
 
       // 2) RECONTAGEM SEMPRE dos compradores impactados (mantido como estava)
-      try {
-        const newBuyer = rec.getValue({ fieldId: 'custbody_aae_buyer' });
-        const oldBuyer = context.oldRecord ? context.oldRecord.getValue({ fieldId: 'custbody_aae_buyer' }) : null;
+      // try {
+      //   const newBuyer = rec.getValue({ fieldId: 'custbody_aae_buyer' });
+      //   const oldBuyer = context.oldRecord ? context.oldRecord.getValue({ fieldId: 'custbody_aae_buyer' }) : null;
 
-        const impacted = {};
-        if (newBuyer) impacted[String(newBuyer)] = true;
-        if (oldBuyer && String(oldBuyer) !== String(newBuyer)) impacted[String(oldBuyer)] = true;
+      //   const impacted = {};
+      //   if (newBuyer) impacted[String(newBuyer)] = true;
+      //   if (oldBuyer && String(oldBuyer) !== String(newBuyer)) impacted[String(oldBuyer)] = true;
 
-        for (var empId in impacted) {
-          const newCount = _recountEmployeePendingOnly(empId);
-          if (newCount != null) {
-            const curr = _getCurrentCounter(empId);
-            if (curr !== newCount) {
-              record.submitFields({
-                type: record.Type.EMPLOYEE,
-                id: empId,
-                values: { custentity_pd_pow_prs_assigned_today: newCount },
-                options: { enableSourcing: false, ignoreMandatoryFields: true }
-              });
-              log.audit('Recontagem aplicada',
-                `Employee ${empId} -> contador ${curr} → ${newCount} (PR ${prId})`);
-            } else {
-              log.debug('Recontagem sem alteração', { employeeId: empId, count: newCount, prId });
-            }
-          }
-        }
-      } catch (e) {
-        log.error('Erro na recontagem', e);
-      }
+      //   for (var empId in impacted) {
+      //     const newCount = _recountEmployeePendingOnly(empId);
+      //     if (newCount != null) {
+      //       const curr = _getCurrentCounter(empId);
+      //       if (curr !== newCount) {
+      //         record.submitFields({
+      //           type: record.Type.EMPLOYEE,
+      //           id: empId,
+      //           values: { custentity_pd_pow_prs_assigned_today: newCount },
+      //           options: { enableSourcing: false, ignoreMandatoryFields: true }
+      //         });
+      //         log.audit('Recontagem aplicada',
+      //           `Employee ${empId} -> contador ${curr} → ${newCount} (PR ${prId})`);
+      //       } else {
+      //         log.debug('Recontagem sem alteração', { employeeId: empId, count: newCount, prId });
+      //       }
+      //     }
+      //   }
+      // } catch (e) {
+      //   log.error('Erro na recontagem', e);
+      // }
 
     } catch (e) {
       log.error('Erro no afterSubmit - PR', e);

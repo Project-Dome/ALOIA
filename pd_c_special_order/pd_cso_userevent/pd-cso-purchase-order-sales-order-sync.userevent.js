@@ -8,12 +8,14 @@
 define([
 
     'N/log',
+    // 'N/record',
     '../pd_cso_service/pd-cso-purchase-order.service',
     '../pd_cso_service/pd-cso-sales-order.service'
 
 ], function (
-    
+
     log,
+    // record,
     purchase_order_service,
     sales_order_service
 ) {
@@ -30,14 +32,18 @@ define([
 
             const _newRecord = context.newRecord;
             const _purchaseOrderId = _newRecord.id;
-            const _createdFrom = _newRecord.getValue({ fieldId: 'createdfrom' });
+
+            const _purchaseOrderData = purchase_order_service.readData(_newRecord);
+
+            const _salesOrderId = purchase_order_service.getSalesOrderIdFromPurchaseOrderBody(_purchaseOrderData);
+
 
             log.debug({
                 title: 'PO -> SO Sync | Início',
                 details: {
                     eventType: context.type,
                     purchaseOrderId: _purchaseOrderId,
-                    createdfrom: _createdFrom
+                    _salesOrderId: _salesOrderId
                 }
             });
 
@@ -45,18 +51,18 @@ define([
                 return;
             }
 
-            if (!_createdFrom) {
+            if (!_salesOrderId) {
                 log.debug({
-                    title: 'PO -> SO Sync | createdfrom vazio',
+                    title: 'PO -> SO Sync | Sales Order não encontrada',
                     details: _purchaseOrderId
                 });
                 return;
             }
 
-            if (!sales_order_service.isSalesOrder(_createdFrom)) {
+            if (!sales_order_service.isSalesOrder(_salesOrderId)) {
                 log.debug({
                     title: 'PO -> SO Sync | Origem não é Sales Order',
-                    details: _createdFrom
+                    details: _salesOrderId
                 });
                 return;
             }
@@ -64,7 +70,7 @@ define([
             const _purchaseOrderSyncPayload =
                 purchase_order_service.buildPurchaseOrderToSalesOrderSyncPayload({
                     purchaseOrderId: _purchaseOrderId,
-                    salesOrderId: _createdFrom
+                    salesOrderId: _salesOrderId
                 });
 
             sales_order_service.applyPurchaseOrderToSalesOrderSync(
@@ -75,7 +81,7 @@ define([
                 title: 'PO -> SO Sync | Fim',
                 details: {
                     purchaseOrderId: _purchaseOrderId,
-                    salesOrderId: _createdFrom
+                    salesOrderId: _salesOrderId
                 }
             });
 
