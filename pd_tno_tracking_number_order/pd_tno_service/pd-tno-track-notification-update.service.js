@@ -27,19 +27,11 @@ define([
                 valuesToUpdate[fieldId] = payload[fieldId];
             });
 
-            // ============================
-            // ETAPA 2.1
-            // Delivered → inativar registro
-            // ============================
             if (
                 payload.custrecord_pd_tno_status &&
                 String(payload.custrecord_pd_tno_status).toLowerCase() === 'delivered'
             ) {
-                valuesToUpdate.isinactive = true;
-
-                log.audit('Track Notification encerrado (Delivered)', {
-                    notificationId: notificationId
-                });
+                valuesToUpdate.isinactive = false;
             }
 
             record.submitFields({
@@ -84,19 +76,11 @@ define([
                     valuesToUpdate[fieldId] = item.payload[fieldId];
                 });
 
-                // ============================
-                // ETAPA 2.1
-                // Delivered → inativar registro
-                // ============================
                 if (
                     item.payload.custrecord_pd_tno_status &&
                     String(item.payload.custrecord_pd_tno_status).toLowerCase() === 'delivered'
                 ) {
-                    valuesToUpdate.isinactive = true;
-
-                    log.audit('Track Notification encerrado (Delivered)', {
-                        notificationId: item.notificationId
-                    });
+                    valuesToUpdate.isinactive = false;
                 }
 
                 record.submitFields({

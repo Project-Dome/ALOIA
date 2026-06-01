@@ -39,51 +39,46 @@ define(
                     throw new Error('Tracking number ou carrier ausente');
                 }
 
-                // 2) Busca o custom record (retorna { exists, notificationId })
-                var existsResult = track_notification_query_service.existsNotification(
-                    // parsed.carrier,
+                // 2) Busca todos os custom records ativos para o tracking number
+                var _notificationIds = track_notification_query_service.getAllActiveNotificationsByTrackingNumber(
                     parsed.trackingNumber
                 );
 
-                log.debug(logTitle, 'existsNotification result: ' + JSON.stringify(existsResult));
+                log.debug(logTitle, 'getAllActiveNotificationsByTrackingNumber result: ' + JSON.stringify(_notificationIds));
 
-                var notificationId =
-                    existsResult && existsResult.notificationId
-                        ? existsResult.notificationId
-                        : null;
-
-                if (!notificationId) {
+                if (!_notificationIds || _notificationIds.length === 0) {
                     throw new Error('Tracking Notification não encontrada');
                 }
 
                 // 3) Monta payload com fieldIds corretos (padrão UE)
-                var payloadUpdate = build_payload_service.buildPayload({
+                var _payloadUpdate = build_payload_service.buildPayload({
                     status: parsed.status,
                     statusDate: parsed.statusDate,
                     estimatedDeliveryDate: parsed.estimatedDeliveryDate,
                     historicalData: parsed.historical
                 });
 
-                // 🔒 REGRA: se a 17Track vier sem estimated_delivery_date, NÃO atualizar o campo no custom record
+                // REGRA: se a 17Track vier sem estimated_delivery_date, NÃO atualizar o campo no custom record
                 if (
                     parsed.estimatedDeliveryDate === null ||
                     parsed.estimatedDeliveryDate === undefined ||
                     parsed.estimatedDeliveryDate === ''
                 ) {
-                    delete payloadUpdate.custrecord_pd_tno_estimated_delivery_dat;
+                    delete _payloadUpdate.custrecord_pd_tno_estimated_delivery_dat;
                 }
 
-                log.debug(logTitle, 'Payload para atualização: ' + JSON.stringify(payloadUpdate));
+                log.debug(logTitle, 'Payload para atualização: ' + JSON.stringify(_payloadUpdate));
 
-                // 4) Atualiza custom record
-                track_notification_update_service.updateSingleNotification(
-                    notificationId,
-                    payloadUpdate
-                );
+                // 4) Atualiza todos os custom records ativos encontrados
+                var _notifications = _notificationIds.map(function (_id) {
+                    return { notificationId: _id, payload: _payloadUpdate };
+                });
 
-                log.audit(logTitle, 'Notificação atualizada com sucesso: ' + notificationId);
+                track_notification_update_service.updateTrackNotifications(_notifications);
 
-                return { success: true, notificationId: notificationId };
+                log.audit(logTitle, 'Notificações atualizadas com sucesso: ' + JSON.stringify(_notificationIds));
+
+                return { success: true, notificationIds: _notificationIds };
 
             } catch (e) {
                 log.error(logTitle, e);

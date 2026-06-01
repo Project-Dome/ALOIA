@@ -28,12 +28,8 @@ define(
             var latestEvent = trackInfo.latest_event || {};
             var latestStatus = trackInfo.latest_status || {};
 
-            var estimatedDelivery = (
-                payload.time_metrics &&
-                payload.time_metrics.estimated_delivery_date
-            )
-                ? payload.time_metrics.estimated_delivery_date.to
-                : null;
+            var _edd = payload.time_metrics && payload.time_metrics.estimated_delivery_date;
+            var estimatedDelivery = _edd ? (_edd.to || _edd.from || null) : null;
 
             // 🔹 USAR SOMENTE milestone (padrão User Event)
             var milestones = Array.isArray(trackInfo.milestone)

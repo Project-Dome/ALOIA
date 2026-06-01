@@ -253,9 +253,8 @@ define([
 
                             const trackInfo = acceptedItem.track_info || {};
                             const timeMetrics = trackInfo.time_metrics;
-                            const estimatedDeliveryTo = timeMetrics &&
-                                timeMetrics.estimated_delivery_date &&
-                                timeMetrics.estimated_delivery_date.to;
+                            const _edd = timeMetrics && timeMetrics.estimated_delivery_date;
+                            const estimatedDeliveryTo = _edd ? (_edd.to || _edd.from || null) : null;
 
                             const matchingItems = (trackingData.items || []).filter(function (line) {
                                 return line.trackingNumerLine === trackingNumber;
@@ -340,64 +339,52 @@ define([
 
                         if (!notificationId) {
 
-                            const statusValue = poNotif.getSublistValue({
-                                sublistId: 'item',
-                                fieldId: 'custcol_pd_tno_tracking_status',
-                                line: i
-                            }) || '';
+                            const _existingCheck = track_notification_query_service.existsNotification(trackingNumberLine);
 
-                            const estimatedDateValue = poNotif.getSublistValue({
-                                sublistId: 'item',
-                                fieldId: 'custcol_pd_tno_estimated_delivery_dat',
-                                line: i
-                            }) || null;
+                            if (_existingCheck.exists) {
+                                notificationId = _existingCheck.notificationId;
+                                createdMap[key] = notificationId;
+                            } else {
 
-                            // ========= AJUSTE DO CAMPO NAME (SEM HORA) =========
-                            // statusValue: "Tracking registered successfully\n2025-12-11T09:12:37.803Z"
-                            let formattedDateOnly = null;
+                                const statusValue = poNotif.getSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'custcol_pd_tno_tracking_status',
+                                    line: i
+                                }) || '';
 
-                            try {
-                                const statusLines = statusValue.split('\n');
-                                const lastLine = statusLines[statusLines.length - 1] || '';
-                                formattedDateOnly = lastLine.split('T')[0]; // "2025-12-11"
-                            } catch (eName) {
-                                formattedDateOnly = null;
+                                const estimatedDateValue = poNotif.getSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'custcol_pd_tno_estimated_delivery_dat',
+                                    line: i
+                                }) || null;
+
+                                const statusDateObj = new Date();
+
+                                const historicalObj = {
+                                    trackingNumber: trackingNumberLine,
+                                    carrier: carrierValue,
+                                    status: statusValue,
+                                    estimatedDelivery: estimatedDateValue,
+                                    statusDate: statusDateObj
+                                };
+
+                                notificationId = track_notification_service.createTrackNotification({
+                                    name: trackingNumberLine,
+                                    trackingNumber: trackingNumberLine,
+                                    carrier: carrierValue,
+                                    status: statusValue,
+                                    statusDate: statusDateObj,
+                                    estimatedDeliveryDate: estimatedDateValue,
+                                    historical: historicalObj,
+                                    originTransaction: poId
+                                });
+
+                                if (!notificationId) {
+                                    continue;
+                                }
+
+                                createdMap[key] = notificationId;
                             }
-
-                            let nameValue = 'Tracking registered successfully';
-                            if (formattedDateOnly) {
-                                nameValue += '\n' + formattedDateOnly;
-                            }
-
-                            // Status date (data/hora atual – o parse fino é responsabilidade do service)
-                            const statusDateObj = new Date();
-
-                            // Histórico simples (objeto será convertido em JSON no service)
-                            const historicalObj = {
-                                trackingNumber: trackingNumberLine,
-                                carrier: carrierValue,
-                                status: statusValue,
-                                estimatedDelivery: estimatedDateValue,
-                                statusDate: statusDateObj
-                            };
-
-                            // Criação do custom record via service pd-tno-track-notification.service.js
-                            notificationId = track_notification_service.createTrackNotification({
-                                name: nameValue,
-                                trackingNumber: trackingNumberLine,
-                                carrier: carrierValue,
-                                status: statusValue,
-                                statusDate: statusDateObj,
-                                estimatedDeliveryDate: estimatedDateValue,
-                                historical: historicalObj,
-                                originTransaction: poId
-                            });
-
-                            if (!notificationId) {
-                                continue;
-                            }
-
-                            createdMap[key] = notificationId;
                         }
 
                         // Amarra o notificationId na linha atual da PO

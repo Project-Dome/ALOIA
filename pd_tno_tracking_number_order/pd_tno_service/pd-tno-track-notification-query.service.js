@@ -28,6 +28,7 @@ define([
                 SELECT id
                 FROM customrecord_pd_tno_track_notification
                 WHERE name = ?
+                AND isinactive = 'F'
                 ORDER BY id DESC
             `;
 
@@ -170,10 +171,42 @@ define([
     }
 
 
+    function getAllActiveNotificationsByTrackingNumber(trackingNumber) {
+        try {
+            if (!trackingNumber) {
+                return [];
+            }
+
+            var sql = `
+                SELECT id
+                FROM customrecord_pd_tno_track_notification
+                WHERE name = ?
+                AND isinactive = 'F'
+                ORDER BY id DESC
+            `;
+
+            var resultSet = query.runSuiteQL({
+                query: sql,
+                params: [trackingNumber]
+            });
+
+            var results = resultSet.asMappedResults() || [];
+
+            return results.map(function (_r) { return Number(_r.id); });
+
+        } catch (e) {
+            log.error({
+                title: 'getAllActiveNotificationsByTrackingNumber - erro',
+                details: e
+            });
+            return [];
+        }
+    }
+
     return {
         existsNotification: existsNotification,
+        getAllActiveNotificationsByTrackingNumber: getAllActiveNotificationsByTrackingNumber,
         getInboundTrackingNotification: getInboundTrackingNotification,
-        getTrackNotificationData:getTrackNotificationData
-
+        getTrackNotificationData: getTrackNotificationData
     };
 });
