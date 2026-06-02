@@ -54,7 +54,7 @@ define(
                 var _payloadUpdate = build_payload_service.buildPayload({
                     status: parsed.status,
                     statusDate: parsed.statusDate,
-                    estimatedDeliveryDate: parsed.estimatedDeliveryDate,
+                    deliveryTo: parsed.estimatedDeliveryDate,
                     historicalData: parsed.historical
                 });
 
@@ -66,6 +66,8 @@ define(
                 ) {
                     delete _payloadUpdate.custrecord_pd_tno_estimated_delivery_dat;
                 }
+
+                _payloadUpdate.custrecord_pd_tno_last_body = JSON.stringify(payload);
 
                 log.debug(logTitle, 'Payload para atualização: ' + JSON.stringify(_payloadUpdate));
 

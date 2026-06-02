@@ -13,7 +13,7 @@ define([
 ) {
 
     //^ Início - Function PO - excluir  após validação
-    function existsNotification( trackingNumber) {
+    function existsNotification(trackingNumber) {
         log.debug('linha 17 - existsNotification - trackingNumber', trackingNumber);
 
         try {
@@ -27,8 +27,7 @@ define([
             var sql = `
                 SELECT id
                 FROM customrecord_pd_tno_track_notification
-                WHERE name = ?
-                AND isinactive = 'F'
+                WHERE TRIM(name) = TRIM(?)
                 ORDER BY id DESC
             `;
 

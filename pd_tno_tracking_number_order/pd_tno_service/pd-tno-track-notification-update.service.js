@@ -83,6 +83,7 @@ define([
                     valuesToUpdate.isinactive = false;
                 }
 
+                log.audit('linha 86 - updateTrackNotifications - item.notificationId', item.notificationId)
                 record.submitFields({
                     type: 'customrecord_pd_tno_track_notification',
                     id: item.notificationId,
