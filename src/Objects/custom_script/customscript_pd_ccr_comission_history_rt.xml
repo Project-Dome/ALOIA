@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_pd_ccr_comission_history_rt">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | Approval Comission History RT</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_restlet/pd-ccr-approval-comission-history.restlet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_comission_history_rt">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>AUDIT</loglevel>
+      <status>RELEASED</status>
+      <title>PD | CCR | Approval Comission History RT</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>

@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_pd_ccr_create_vendor_bill">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | CREATE VENDOR BILL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_restlet/pd-ccr-create-vendorbill.restlet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_create_vendor_billrt">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>RELEASED</status>
+      <title>PD | CCR | CREATE VENDOR BILL RT</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>

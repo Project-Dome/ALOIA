@@ -1,0 +1,24 @@
+<customlist scriptid="customlist_pd_finalidade">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Finalidade</name>
+  <customvalues>
+    <customvalue scriptid="val_2111101_11559462_956">
+      <abbreviation>S</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Stock</value>
+    </customvalue>
+    <customvalue scriptid="val_2111102_11559462_931">
+      <abbreviation>R</abbreviation>
+      <isinactive>F</isinactive>
+      <value>RMA Vendor</value>
+    </customvalue>
+    <customvalue scriptid="val_2111103_11559462_670">
+      <abbreviation>R</abbreviation>
+      <isinactive>F</isinactive>
+      <value>RO</value>
+    </customvalue>
+  </customvalues>
+</customlist>

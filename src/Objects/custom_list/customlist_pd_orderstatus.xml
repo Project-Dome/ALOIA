@@ -1,0 +1,59 @@
+<customlist scriptid="customlist_pd_orderstatus">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>F</isordered>
+  <name>PD | Order Status</name>
+  <customvalues>
+    <customvalue scriptid="val_294957_11559462_581">
+      <abbreviation></abbreviation>
+      <isinactive>T</isinactive>
+      <value>CANCELLED</value>
+    </customvalue>
+    <customvalue scriptid="val_65219_11559462_766">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CLOSED</value>
+    </customvalue>
+    <customvalue scriptid="val_65218_11559462_700">
+      <abbreviation>C</abbreviation>
+      <isinactive>T</isinactive>
+      <value>Closed - Lost</value>
+    </customvalue>
+    <customvalue scriptid="val_70683_11559462_948">
+      <abbreviation>D</abbreviation>
+      <isinactive>F</isinactive>
+      <value>DELIVERED</value>
+    </customvalue>
+    <customvalue scriptid="val_65220_11559462_599">
+      <abbreviation>I</abbreviation>
+      <isinactive>T</isinactive>
+      <value>In Negotiation</value>
+    </customvalue>
+    <customvalue scriptid="val_69222_11559462_406">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>ON HOLD</value>
+    </customvalue>
+    <customvalue scriptid="val_70056_11559462_724">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>OPEN</value>
+    </customvalue>
+    <customvalue scriptid="val_70685_11559462_217">
+      <abbreviation>Q</abbreviation>
+      <isinactive>F</isinactive>
+      <value>QUARANTINE</value>
+    </customvalue>
+    <customvalue scriptid="val_70684_11559462_866">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>RMA</value>
+    </customvalue>
+    <customvalue scriptid="val_69221_11559462_140">
+      <abbreviation></abbreviation>
+      <isinactive>T</isinactive>
+      <value>Waiting Customer</value>
+    </customvalue>
+  </customvalues>
+</customlist>

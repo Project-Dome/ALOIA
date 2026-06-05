@@ -1,0 +1,19 @@
+<customlist scriptid="customlist_pd_shipvia_so_list">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Ship Via Account</name>
+  <customvalues>
+    <customvalue scriptid="val_248119_11559462_129">
+      <abbreviation>T</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Teste1</value>
+    </customvalue>
+    <customvalue scriptid="val_248120_11559462_772">
+      <abbreviation>T</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Teste2</value>
+    </customvalue>
+  </customvalues>
+</customlist>

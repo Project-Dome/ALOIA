@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_pd_ccr_payment_details">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | Payment Details</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_restlet/pd-ccr-screen-payment-details.restlet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_payment_details_rt">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>AUDIT</loglevel>
+      <status>RELEASED</status>
+      <title>PD | CCR | Payment Details RT</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>

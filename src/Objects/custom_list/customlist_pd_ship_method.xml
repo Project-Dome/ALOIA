@@ -1,0 +1,129 @@
+<customlist scriptid="customlist_pd_ship_method">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>F</isordered>
+  <name>Ship Method</name>
+  <customvalues>
+    <customvalue scriptid="val_2094184_11559462_935">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>2ND DAY</value>
+    </customvalue>
+    <customvalue scriptid="val_2110491_11559462_242">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>3 DAY SELECT</value>
+    </customvalue>
+    <customvalue scriptid="val_2110270_11559462_355">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>ALOIA DELIVERY</value>
+    </customvalue>
+    <customvalue scriptid="val_2202030_11559462_466">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>CUSTOMER PICK UP</value>
+    </customvalue>
+    <customvalue scriptid="val_2204611_11559462_200">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>ECONOMY</value>
+    </customvalue>
+    <customvalue scriptid="val_2110417_11559462_538">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>EMBRAER PICKUP</value>
+    </customvalue>
+    <customvalue scriptid="val_2110524_11559462_965">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXPEDITORS FRANKFURT</value>
+    </customvalue>
+    <customvalue scriptid="val_2110261_11559462_489">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXPEDITORS PICKUP</value>
+    </customvalue>
+    <customvalue scriptid="val_2110274_11559462_590">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXPEDITORS SHANGHAI</value>
+    </customvalue>
+    <customvalue scriptid="val_2110402_11559462_492">
+      <abbreviation>P</abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXPRESS PRIORITY </value>
+    </customvalue>
+    <customvalue scriptid="val_2093129_11559462_953">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXPRESS SAVER</value>
+    </customvalue>
+    <customvalue scriptid="val_2202031_11559462_260">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>GE PICK UP</value>
+    </customvalue>
+    <customvalue scriptid="val_2093044_11559462_113">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>GROUND</value>
+    </customvalue>
+    <customvalue scriptid="val_2093127_11559462_153">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>INTERNATIONAL ECONOMY</value>
+    </customvalue>
+    <customvalue scriptid="val_2093128_11559462_286">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>INTERNATIONAL PRIORITY</value>
+    </customvalue>
+    <customvalue scriptid="val_2204285_11559462_386">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>MASTER FREIGHT PICKUP MIA</value>
+    </customvalue>
+    <customvalue scriptid="val_324683_11559462_634">
+      <abbreviation>N</abbreviation>
+      <isinactive>F</isinactive>
+      <value>NEXT DAY</value>
+    </customvalue>
+    <customvalue scriptid="val_2093045_11559462_463">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>P1</value>
+    </customvalue>
+    <customvalue scriptid="val_2110393_11559462_743">
+      <abbreviation>P</abbreviation>
+      <isinactive>F</isinactive>
+      <value>P1 PRIORITY OVERNIGHT</value>
+    </customvalue>
+    <customvalue scriptid="val_2110394_11559462_872">
+      <abbreviation>S</abbreviation>
+      <isinactive>F</isinactive>
+      <value>SATURDAY DELIVERY</value>
+    </customvalue>
+    <customvalue scriptid="val_2111106_11559462_723">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>SSNL PICK UP</value>
+    </customvalue>
+    <customvalue scriptid="val_2110400_11559462_588">
+      <abbreviation>W</abbreviation>
+      <isinactive>F</isinactive>
+      <value>WORLDWIDE  SAVER</value>
+    </customvalue>
+    <customvalue scriptid="val_2110398_11559462_477">
+      <abbreviation>W</abbreviation>
+      <isinactive>F</isinactive>
+      <value>WORLDWIDE EXPEDITED</value>
+    </customvalue>
+    <customvalue scriptid="val_2110399_11559462_522">
+      <abbreviation>W</abbreviation>
+      <isinactive>F</isinactive>
+      <value>WORLDWIDE EXPRESS</value>
+    </customvalue>
+  </customvalues>
+</customlist>

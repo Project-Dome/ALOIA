@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_ccr_view_commission">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | VIEW COMMISSION</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_suitelet/pd-ccr-screen-suitelet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_view_commission_st">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>AUDIT</loglevel>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+      <title>PD | CCR | VIEW COMMISSION ST</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

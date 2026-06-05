@@ -1,0 +1,19 @@
+<customlist scriptid="customlist_pd__tipo_rma_scrap">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Tipo</name>
+  <customvalues>
+    <customvalue scriptid="val_2111068_11559462_249">
+      <abbreviation>R</abbreviation>
+      <isinactive>F</isinactive>
+      <value>RMA</value>
+    </customvalue>
+    <customvalue scriptid="val_2111069_11559462_251">
+      <abbreviation>S</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Scrap</value>
+    </customvalue>
+  </customvalues>
+</customlist>

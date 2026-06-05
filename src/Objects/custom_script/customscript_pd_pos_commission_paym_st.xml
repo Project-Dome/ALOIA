@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_pos_commission_paym_st">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | POS | Commission Payment ST</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_purchase_order_saving/pd_pos_suitelet/pd-pos-commission-payment.suitelet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_pos_commission_paym_st">
+      <allemployees>T</allemployees>
+      <allpartners>T</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>AUDIT</loglevel>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+      <title>PD | POS | Commission Payment ST</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

@@ -1,0 +1,24 @@
+<customlist scriptid="customlist_pd__responsabilidade_custo">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Responsabilidade do Custo</name>
+  <customvalues>
+    <customvalue scriptid="val_2111077_11559462_581">
+      <abbreviation>A</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Aloia</value>
+    </customvalue>
+    <customvalue scriptid="val_2111078_11559462_995">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Cliente</value>
+    </customvalue>
+    <customvalue scriptid="val_2111079_11559462_369">
+      <abbreviation>V</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Vendor</value>
+    </customvalue>
+  </customvalues>
+</customlist>

@@ -1,0 +1,49 @@
+<customlist scriptid="customlist_pd_aae_status_item">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>PD | AAE | Status Item</name>
+  <customvalues>
+    <customvalue scriptid="val_64845_11559462_382">
+      <abbreviation>N</abbreviation>
+      <isinactive>F</isinactive>
+      <value>New</value>
+    </customvalue>
+    <customvalue scriptid="val_64846_11559462_219">
+      <abbreviation>L</abbreviation>
+      <isinactive>F</isinactive>
+      <value>New Surplus</value>
+    </customvalue>
+    <customvalue scriptid="val_64847_11559462_828">
+      <abbreviation>U</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Used</value>
+    </customvalue>
+    <customvalue scriptid="val_64848_11559462_887">
+      <abbreviation>R</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Repaired</value>
+    </customvalue>
+    <customvalue scriptid="val_69237_11559462_726">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>Overhauled</value>
+    </customvalue>
+    <customvalue scriptid="val_250587_11559462_635">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>Inspected</value>
+    </customvalue>
+    <customvalue scriptid="val_2202092_11559462_363">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>Serviceable</value>
+    </customvalue>
+    <customvalue scriptid="val_2202093_11559462_385">
+      <abbreviation></abbreviation>
+      <isinactive>F</isinactive>
+      <value>Tested</value>
+    </customvalue>
+  </customvalues>
+</customlist>
