@@ -54,6 +54,25 @@ define([
                     message: 'Dados insuficientes para processar tracking.',
                     trackingData: trackingData
                 });
+
+                if (trackingData && trackingData.notificationId && !trackingData.carrierCode) {
+                    var _now = new Date();
+                    var _mm = String(_now.getMonth() + 1).padStart(2, '0');
+                    var _dd = String(_now.getDate()).padStart(2, '0');
+                    var _yyyy = _now.getFullYear();
+                    var _hh = String(_now.getHours()).padStart(2, '0');
+                    var _min = String(_now.getMinutes()).padStart(2, '0');
+                    var _historicalMessage = 'Carrier Code not registered - ' + _mm + '/' + _dd + '/' + _yyyy + ' - ' + _hh + ':' + _min;
+
+                    var _payload = payloadService.buildPayload({
+                        status: '',
+                        deliveryTo: null,
+                        historicalData: _historicalMessage
+                    });
+
+                    updateService.updateSingleNotification(trackingData.notificationId, _payload);
+                }
+
                 return;
             }
 
