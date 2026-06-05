@@ -1,0 +1,24 @@
+<customlist scriptid="customlist_pd_blc_convert_status">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>PD | BLC | Convert Status</name>
+  <customvalues>
+    <customvalue scriptid="val_2240472_11559462_sb1_979">
+      <abbreviation>P</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Pending</value>
+    </customvalue>
+    <customvalue scriptid="val_2240473_11559462_sb1_955">
+      <abbreviation>P</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Processed</value>
+    </customvalue>
+    <customvalue scriptid="val_2240474_11559462_sb1_474">
+      <abbreviation>E</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Error</value>
+    </customvalue>
+  </customvalues>
+</customlist>
