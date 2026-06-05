@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_uoc_update_op_cost_sl">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | UOC | Update Operation Cost SL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_uoc_update_operation_cost/pd_uoc_suitelet/pd-uoc-update-operating-cost.suitelet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_uoc_update_op_cost_sl">
+      <allemployees>T</allemployees>
+      <allpartners>T</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>T</isonline>
+      <loglevel>ERROR</loglevel>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+      <title>PD | UOC | Update Operation Cost SL</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

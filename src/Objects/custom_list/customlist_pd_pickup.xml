@@ -1,0 +1,19 @@
+<customlist scriptid="customlist_pd_pickup">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Pickup</name>
+  <customvalues>
+    <customvalue scriptid="val_2205423_11559462_919">
+      <abbreviation>U</abbreviation>
+      <isinactive>F</isinactive>
+      <value>UK</value>
+    </customvalue>
+    <customvalue scriptid="val_2205424_11559462_701">
+      <abbreviation>D</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Dania</value>
+    </customvalue>
+  </customvalues>
+</customlist>

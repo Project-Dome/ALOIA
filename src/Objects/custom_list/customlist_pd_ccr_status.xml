@@ -1,0 +1,24 @@
+<customlist scriptid="customlist_pd_ccr_status">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>CCR | Status</name>
+  <customvalues>
+    <customvalue scriptid="val_59198_11559462_292">
+      <abbreviation>A</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Approved</value>
+    </customvalue>
+    <customvalue scriptid="val_59199_11559462_507">
+      <abbreviation>R</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Reject</value>
+    </customvalue>
+    <customvalue scriptid="val_59200_11559462_785">
+      <abbreviation>P</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Pending Approval</value>
+    </customvalue>
+  </customvalues>
+</customlist>

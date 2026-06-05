@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_sem_send_email_sl">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | SEM | Button Send Email Pymt SL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_sem_send_email_billpayment/pd_sem_suitelet/pd-sem-send-email.suitelet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_sem_send_email_sl">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>T</isonline>
+      <loglevel>ERROR</loglevel>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+      <title>PD | SEM | Button Send Email Pymt SL</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

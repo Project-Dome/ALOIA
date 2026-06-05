@@ -1,0 +1,65 @@
+<suitelet scriptid="customscript_pd_pdf_print_pack_list_sl">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | PDF | Print Pack List SL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/project_dome/pd_pdf_transaction/invoice/suitelet/pd_pdf_packing_list_sl.js]</scriptfile>
+  <scriptcustomfields>
+    <scriptcustomfield scriptid="custscript_pd_pack_terms_condition_ds">
+      <accesslevel>2</accesslevel>
+      <aidescription></aidescription>
+      <applyformatting>F</applyformatting>
+      <checkspelling>F</checkspelling>
+      <defaultchecked>F</defaultchecked>
+      <defaultselection></defaultselection>
+      <defaultvalue></defaultvalue>
+      <description></description>
+      <displayheight></displayheight>
+      <displaytype>NORMAL</displaytype>
+      <displaywidth></displaywidth>
+      <dynamicdefault></dynamicdefault>
+      <fieldtype>TEXTAREA</fieldtype>
+      <help></help>
+      <isformula>F</isformula>
+      <ismandatory>F</ismandatory>
+      <label>PD | PackList Terms and Conditions</label>
+      <linktext></linktext>
+      <maxlength></maxlength>
+      <maxvalue></maxvalue>
+      <minvalue></minvalue>
+      <onparentdelete></onparentdelete>
+      <searchlevel>2</searchlevel>
+      <selectrecordtype></selectrecordtype>
+      <setting></setting>
+      <storevalue>T</storevalue>
+    </scriptcustomfield>
+  </scriptcustomfields>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_pdf_print_pack_list_sl">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <custscript_pd_pack_terms_condition_ds>1) All bills are due and payable to the address above mentioned.&amp;lt;br/&amp;gt;&#xd;
+2) All claims and damages are to be made within 30 days.&amp;lt;br/&amp;gt;&#xd;
+3) Sales includes shipping charges unless stated otherwise.&amp;lt;br/&amp;gt;&#xd;
+4) In case of EXCHANGE, the Customer undertakes to return the Core Unit in 30 calendar days&#xd;
+(unless otehrwise on quotation) from the date of delivery the Exchange Unit. After 30 days,&#xd;
+Exchagne Fees will be applied in additon to all costs inccured to the Exchange Transaction, including full and final costs of&#xd;
+the Core&apos;s re-certification, evaluation fees, scrap fees, all transportation costs, customs fees, applicable taxes final shop&#xd;
+evaluation charges, insurance fees and any other costs associated, related to the return of an airworthy Core to ALOIA in the&#xd;
+same condition as supplied, regardless of whether Customer returns the Exchange Unit used or unused, and in addtion to&#xd;
+the full Outhright value charges, according to quotation. The Core Unit must be same OEM&apos;s PN and will be re-certified back to the same or higher level of condition of the original Exchange Unit.</custscript_pd_pack_terms_condition_ds>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>DEBUG</loglevel>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+      <title>PD | PDF | Print Pack List SL</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

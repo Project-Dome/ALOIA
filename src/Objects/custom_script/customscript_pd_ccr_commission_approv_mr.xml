@@ -1,0 +1,30 @@
+<mapreducescript scriptid="customscript_pd_ccr_commission_approv_mr">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | Commission Approval MR</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_map_reduce/pd_ccr_map_reduce_main/pd-ccr-commission-approval.mapreduce.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_commission_approv_mr">
+      <buffersize>1</buffersize>
+      <concurrencylimit>1</concurrencylimit>
+      <isdeployed>T</isdeployed>
+      <loglevel>AUDIT</loglevel>
+      <queueallstagesatonce>T</queueallstagesatonce>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>SCHEDULED</status>
+      <title>PD | CCR | Commission Approval MR</title>
+      <yieldaftermins>60</yieldaftermins>
+      <recurrence>
+        <daily>
+          <everyxdays>1</everyxdays>
+          <repeat>PT15M</repeat>
+          <startdate>2025-10-06</startdate>
+          <starttime>10:00:00Z</starttime>
+        </daily>
+      </recurrence>
+    </scriptdeployment>
+  </scriptdeployments>
+</mapreducescript>

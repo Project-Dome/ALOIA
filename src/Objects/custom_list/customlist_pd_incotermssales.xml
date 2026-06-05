@@ -1,0 +1,64 @@
+<customlist scriptid="customlist_pd_incotermssales">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>Incoterms for Sales</name>
+  <customvalues>
+    <customvalue scriptid="val_250660_11559462_878">
+      <abbreviation>E</abbreviation>
+      <isinactive>F</isinactive>
+      <value>EXW</value>
+    </customvalue>
+    <customvalue scriptid="val_277595_11559462_487">
+      <abbreviation>F</abbreviation>
+      <isinactive>F</isinactive>
+      <value>FCA</value>
+    </customvalue>
+    <customvalue scriptid="val_277596_11559462_177">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CPT</value>
+    </customvalue>
+    <customvalue scriptid="val_277597_11559462_584">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CIP</value>
+    </customvalue>
+    <customvalue scriptid="val_277598_11559462_849">
+      <abbreviation>D</abbreviation>
+      <isinactive>F</isinactive>
+      <value>DAP</value>
+    </customvalue>
+    <customvalue scriptid="val_277599_11559462_350">
+      <abbreviation>D</abbreviation>
+      <isinactive>F</isinactive>
+      <value>DPU</value>
+    </customvalue>
+    <customvalue scriptid="val_277600_11559462_520">
+      <abbreviation>D</abbreviation>
+      <isinactive>F</isinactive>
+      <value>DDP</value>
+    </customvalue>
+    <customvalue scriptid="val_277601_11559462_433">
+      <abbreviation>F</abbreviation>
+      <isinactive>F</isinactive>
+      <value>FAS</value>
+    </customvalue>
+    <customvalue scriptid="val_277602_11559462_271">
+      <abbreviation>F</abbreviation>
+      <isinactive>F</isinactive>
+      <value>FOB</value>
+    </customvalue>
+    <customvalue scriptid="val_277603_11559462_692">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CFR</value>
+    </customvalue>
+    <customvalue scriptid="val_277604_11559462_210">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CIF</value>
+    </customvalue>
+  </customvalues>
+</customlist>

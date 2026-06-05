@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_pd_ccr_comission_paymt_rt">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CCR | Approval Comission Payment RT</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_commission_report/pd_ccr_restlet/pd-ccr-screen-payment.restlet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_ccr_comission_paymt_rt">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>RELEASED</status>
+      <title>ePD | CCR | Approval Comission Payment RT</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>

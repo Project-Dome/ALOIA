@@ -1,0 +1,48 @@
+<mapreducescript scriptid="customscript_pd_pos_commission_approv_mr">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | POS | Commission Approval MR</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <scriptfile>[/SuiteScripts/projectdome/pd_purchase_order_saving/pd_pos_map_reduce/pd_pos_map_reduce_main/pd-pos-commission-approval.mapreduce.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_pos_commission_approv_mr">
+      <buffersize>1</buffersize>
+      <concurrencylimit>1</concurrencylimit>
+      <isdeployed>T</isdeployed>
+      <loglevel>AUDIT</loglevel>
+      <queueallstagesatonce>T</queueallstagesatonce>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>NOTSCHEDULED</status>
+      <title>PD | POS | Commission Approval MR</title>
+      <yieldaftermins>60</yieldaftermins>
+      <recurrence>
+        <daily>
+          <everyxdays>1</everyxdays>
+          <repeat>PT15M</repeat>
+          <startdate>2025-10-03</startdate>
+          <starttime>04:00:00Z</starttime>
+        </daily>
+      </recurrence>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy2">
+      <buffersize>1</buffersize>
+      <concurrencylimit>1</concurrencylimit>
+      <isdeployed>T</isdeployed>
+      <loglevel>AUDIT</loglevel>
+      <queueallstagesatonce>T</queueallstagesatonce>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>TESTING</status>
+      <title>PD | POS | Commission Approval MR 2</title>
+      <yieldaftermins>60</yieldaftermins>
+      <recurrence>
+        <single>
+          <repeat></repeat>
+          <startdate>2025-10-20</startdate>
+          <starttime>22:00:00Z</starttime>
+        </single>
+      </recurrence>
+    </scriptdeployment>
+  </scriptdeployments>
+</mapreducescript>

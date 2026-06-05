@@ -1,0 +1,133 @@
+<massupdatescript scriptid="customscript_pd_mass_delete">
+  <defaultfunction>MassDelete</defaultfunction>
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | Mass Delete</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_mass_delete/pd-mass-delete.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_delete_allocschedule">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>ALLOCATIONSCHEDULE</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_pr">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>PURCHASEREQUISITION</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_cashsale">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>CASHSALE</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy12">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>SERIALIZEDINVENTORYITEM</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy13">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <recordtype>LOTNUMBEREDINVENTORYITEM</recordtype>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_po">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>PURCHASEORDER</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_so">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>SALESORDER</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_vendprepay">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>VENDORPREPAYMENT</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_journalentry">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>JOURNALENTRY</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+    <scriptdeployment scriptid="customdeploy_pd_delete_billpay">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <audsubsidiary>[ACCOUNT_SPECIFIC_VALUE]|[ACCOUNT_SPECIFIC_VALUE]</audsubsidiary>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <recordtype>VENDORPAYMENT</recordtype>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+  </scriptdeployments>
+</massupdatescript>

@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_cso_purchase_requ_st">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>PD | CSO | Create Purchase Order ST</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/projectdome/pd_c_special_order/pd_cso_suitelet/pd-cso-purchase-requisition.suitelet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_cso_purchase_requ_st">
+      <allemployees>T</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>DEBUG</loglevel>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+      <title>PD | CSO | Create Purchase Order ST</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

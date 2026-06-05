@@ -1,0 +1,19 @@
+        .gradient-blue {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+        }
+
+        .rotated {
+            transform: rotate(-90deg);
+        }
+
+        .fas.fa-chevron-down {
+            cursor: pointer;
+            /* Mãozinha */
+            transition: color 0.3s ease;
+            /* Transição suave */
+        }
+
+        .fas.fa-chevron-down.text-primary:hover {
+            color: #00dffc !important;
+            /* Azul mais escuro no hover */
+        }
