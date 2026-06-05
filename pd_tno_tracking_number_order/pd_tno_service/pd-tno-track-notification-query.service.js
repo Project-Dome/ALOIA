@@ -179,8 +179,7 @@ define([
             var sql = `
                 SELECT id
                 FROM customrecord_pd_tno_track_notification
-                WHERE name = ?
-                AND isinactive = 'F'
+                WHERE TRIM(name) = TRIM(?)
                 ORDER BY id DESC
             `;
 
