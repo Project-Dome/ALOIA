@@ -28,7 +28,7 @@ define([
 
             const parsedLines = buildParsedLines(statementLines);
 
-            const csvString = "Date (MM/DD/YYYY),Payor/Payee Name,Transaction ID,Transaction Type,Amount,Memo,NS Internal Customer Id,NS Customer Name,Invoice Number(s)\n"
+            const csvString = "Date (MM/DD/YYYY),Payer/Payee Name,Transaction Id,Transaction Type,Amount,Memo,NS Internal Customer Id,NS Customer Name,Invoice Number(s)\n"
                 + parsedLines.map(line => Object.values(line).map(escapeField).join(',')).join('\n');
 
             const parsedFileId = createParsedFile(csvString, fileName, folderId);
