@@ -110,6 +110,7 @@ define([
                     let manufacturerDate = null;
                     let originCountry = null;
                     let manufacturerAddress = null;
+                    let wrLine = null;
 
                     for (let jindex = 0; jindex < subrecordLineCount; jindex++) {
 
@@ -153,12 +154,19 @@ define([
                         manufacturerDate        = manufacturerData['manufacturerDate'] || null;
                         originCountry           = manufacturerData['originCountry']    || null;
                         manufacturerAddress     = manufacturerData['manufacturerAddress'] || null;
+                        wrLine     = manufacturerData['wrLine'];
 
                     }
 
                     log.debug({
                         title: `fillManufacturerItem - Line ${index} - resolved manufacturer data`,
-                        details: { inventoryDetailRecordId, status, manufacturerDate, originCountry, manufacturerAddress }
+                        details: { inventoryDetailRecordId, status, manufacturerDate, originCountry, manufacturerAddress, wrLine }
+                    });
+
+                    transactionRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_wr_line',
+                        value: wrLine || ""
                     });
 
                     if (inventoryDetailRecordId) {
