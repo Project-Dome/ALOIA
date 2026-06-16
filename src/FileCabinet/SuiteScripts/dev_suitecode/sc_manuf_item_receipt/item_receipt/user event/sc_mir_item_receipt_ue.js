@@ -88,6 +88,11 @@ define([
                     fieldId: "custcol_pd_mir_manu_date_ts"
                 });
 
+                let thisWr = itemReceipt.getCurrentSublistValue({
+                    sublistId: "item",
+                    fieldId: "custcol_pd_wr_line"
+                });
+
                 if(thisManufacturer) {
 
                     let manufacturerData = searchModule.getManufacturerData(thisManufacturer);
@@ -156,6 +161,7 @@ define([
                     if(thisCountry) values["custitemnumber_aln_country_of_origin"] = thisCountry;
                     if(thisAddr) values["custitemnumber_pd_mir_manufacturer_addr_ls"] = thisAddr;
                     if(thisManuDate) values["custitemnumber_aln_manufactured_date"] = thisManuDate;
+                    values["custitemnumber_pd_wr_line"] = thisWr;
 
                     if (Object.keys(values).length > 0 && inventoryDetailRecordId) record.submitFields({
                         id: inventoryDetailRecordId,
