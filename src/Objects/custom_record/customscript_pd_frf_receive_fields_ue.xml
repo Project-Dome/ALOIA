@@ -1,0 +1,26 @@
+<usereventscript scriptid="customscript_pd_frf_receive_fields_ue">
+  <description>Fills in fields based on the inbound shipment.</description>
+  <isinactive>F</isinactive>
+  <name>PD | FRF | Receive Fields UE</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/project_dome/pd_frf_fill_receive_fields/item_receipt/userevent/pd_frf_fill_receive_fields.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_frf_receive_fields_ue">
+      <allemployees>F</allemployees>
+      <alllocalizationcontexts>T</alllocalizationcontexts>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <executioncontext>ACTION|ADVANCEDREVREC|BANKCONNECTIVITY|BANKSTATEMENTPARSER|BUNDLEINSTALLATION|CLIENT|CONSOLRATEADJUSTOR|CSVIMPORT|CUSTOMGLLINES|CUSTOMMASSUPDATE|CUSTOMTOOL|DATASETBUILDER|DEBUGGER|EMAILCAPTURE|FICONNECTIVITY|FIPARSER|MAPREDUCE|OCRPLUGIN|OTHER|PAYMENTGATEWAY|PAYMENTPOSTBACK|PLATFORMEXTENSION|PORTLET|PROMOTIONS|RECORDACTION|RESTLET|RESTWEBSERVICES|SCHEDULED|SDFINSTALLATION|SHIPPINGPARTNERS|SUITELET|TAXCALCULATION|USEREVENT|USERINTERFACE|WEBSERVICES|WORKBOOKBUILDER|WORKFLOW</executioncontext>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <recordtype>ITEMRECEIPT</recordtype>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+    </scriptdeployment>
+  </scriptdeployments>
+</usereventscript>
