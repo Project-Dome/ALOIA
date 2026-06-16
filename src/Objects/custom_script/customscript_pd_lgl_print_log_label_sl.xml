@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_pd_lgl_print_log_label_sl">
+  <description>Performs the printing of the logistics label.</description>
+  <isinactive>F</isinactive>
+  <name>PD | LGL | Print Log Label SL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/project_dome/pd_pdf_lgl_logitics_label/invoice/suitelet/pd_lgl_print_log_label_sl.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_lgl_print_log_label_sl">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole>ONLINE_FORM_USER</audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>T</isonline>
+      <loglevel>DEBUG</loglevel>
+      <runasrole>ADMINISTRATOR</runasrole>
+      <status>RELEASED</status>
+      <title>PD | LGL | Print Log Label SL</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>
