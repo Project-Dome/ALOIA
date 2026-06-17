@@ -6,7 +6,7 @@
   <colexpensereport>F</colexpensereport>
   <colgrouponinvoices>F</colgrouponinvoices>
   <colinventoryadjustment>F</colinventoryadjustment>
-  <colitemfulfillment>F</colitemfulfillment>
+  <colitemfulfillment>T</colitemfulfillment>
   <colitemfulfillmentorder>F</colitemfulfillmentorder>
   <colitemreceipt>T</colitemreceipt>
   <colitemreceiptorder>F</colitemreceiptorder>

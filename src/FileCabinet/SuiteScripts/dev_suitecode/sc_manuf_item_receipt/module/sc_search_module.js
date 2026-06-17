@@ -46,6 +46,9 @@ define([
                     "custitemnumber_aln_country_of_origin",
                     "custitemnumber_pd_mir_manufacturer_addr_ls",
                     "custitemnumber_pd_wr_line",
+                    "custitemnumber_pd_type_of_certificate",
+                    "custitemnumber_pd_certificate_date",
+                    "custitemnumber_pd_certificate_number"
                 ]
             });
             const inventoryNumberLookup = lookupInventoryNumber["custitemnumber_aae_manufacturerdetail"][0]?.value
@@ -58,7 +61,10 @@ define([
                 manufacturerDate: dateString,
                 originCountry: lookupInventoryNumber["custitemnumber_aln_country_of_origin"],
                 manufacturerAddress: lookupInventoryNumber["custitemnumber_pd_mir_manufacturer_addr_ls"],
-                wrLine: lookupInventoryNumber["custitemnumber_pd_wr_line"]
+                wrLine: lookupInventoryNumber["custitemnumber_pd_wr_line"],
+                typeCertificate: lookupInventoryNumber["custitemnumber_pd_type_of_certificate"][0]?.value,
+                dateCertificate: lookupInventoryNumber["custitemnumber_pd_certificate_date"],
+                numberCertificate: lookupInventoryNumber["custitemnumber_pd_certificate_number"]
             }
         }
 

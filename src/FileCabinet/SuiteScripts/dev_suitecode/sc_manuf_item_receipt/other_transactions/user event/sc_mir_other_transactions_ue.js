@@ -111,6 +111,9 @@ define([
                     let originCountry = null;
                     let manufacturerAddress = null;
                     let wrLine = null;
+                    let typeCertificate = null;
+                    let dateCertificate = null;
+                    let numberCertificate = null;
 
                     for (let jindex = 0; jindex < subrecordLineCount; jindex++) {
 
@@ -155,6 +158,9 @@ define([
                         originCountry           = manufacturerData['originCountry']    || null;
                         manufacturerAddress     = manufacturerData['manufacturerAddress'] || null;
                         wrLine     = manufacturerData['wrLine'];
+                        typeCertificate        = manufacturerData['typeCertificate'] || null;
+                        dateCertificate        = manufacturerData['dateCertificate'];
+                        numberCertificate        = manufacturerData['numberCertificate'];
 
                     }
 
@@ -167,6 +173,24 @@ define([
                         sublistId: 'item',
                         fieldId: 'custcol_pd_wr_line',
                         value: wrLine || ""
+                    });
+
+                    transactionRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_tipo_de_certificado',
+                        value: typeCertificate
+                    });
+
+                    transactionRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcolpd_data_do_certificado',
+                        value: dateCertificate ? new Date(dateCertificate) : null
+                    });
+
+                    transactionRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_numero_do_certificado',
+                        value: numberCertificate
                     });
 
                     if (inventoryDetailRecordId) {
