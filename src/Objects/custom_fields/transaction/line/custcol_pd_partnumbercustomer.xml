@@ -43,7 +43,7 @@
   <maxlength></maxlength>
   <maxvalue></maxvalue>
   <minvalue></minvalue>
-  <onparentdelete>NO_ACTION</onparentdelete>
+  <onparentdelete>SET_NULL</onparentdelete>
   <searchlevel>2</searchlevel>
   <selectrecordtype>[scriptid=customrecord_aae_part_number_spec_cust]</selectrecordtype>
   <showhierarchy>F</showhierarchy>

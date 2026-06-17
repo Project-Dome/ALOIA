@@ -93,6 +93,22 @@ define([
                     fieldId: "custcol_pd_wr_line"
                 });
 
+                let thisTypeCertificate = itemReceipt.getCurrentSublistValue({
+                    sublistId: "item",
+                    fieldId: "custcol_pd_tipo_de_certificado"
+                });
+
+                let thisDateCertificate = itemReceipt.getCurrentSublistValue({
+                    sublistId: "item",
+                    fieldId: "custcolpd_data_do_certificado"
+                });
+
+                let thisNumberCertificate = itemReceipt.getCurrentSublistValue({
+                    sublistId: "item",
+                    fieldId: "custcol_pd_numero_do_certificado"
+                });
+
+
                 if(thisManufacturer) {
 
                     let manufacturerData = searchModule.getManufacturerData(thisManufacturer);
@@ -161,6 +177,10 @@ define([
                     if(thisCountry) values["custitemnumber_aln_country_of_origin"] = thisCountry;
                     if(thisAddr) values["custitemnumber_pd_mir_manufacturer_addr_ls"] = thisAddr;
                     if(thisManuDate) values["custitemnumber_aln_manufactured_date"] = thisManuDate;
+                    values["custitemnumber_pd_type_of_certificate"] = thisTypeCertificate;
+                    values["custitemnumber_pd_certificate_date"] = thisDateCertificate;
+                    values["custitemnumber_pd_certificate_number"] = thisNumberCertificate;
+
                     values["custitemnumber_pd_wr_line"] = thisWr;
 
                     if (Object.keys(values).length > 0 && inventoryDetailRecordId) record.submitFields({
