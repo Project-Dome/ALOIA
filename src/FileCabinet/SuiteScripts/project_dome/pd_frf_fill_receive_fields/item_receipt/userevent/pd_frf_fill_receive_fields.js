@@ -3,12 +3,10 @@
  * @NScriptType UserEventScript
  */
 define([
-        "N/record",
-
-        "../modules/pd_frf_search_module"
+        "N/https"
     ],
 
-    (record, searchModule) => {
+    ( https) => {
 
         /**
          * Defines the function definition that is executed after record is submitted.
@@ -27,18 +25,9 @@ define([
                     type
                 } = scriptContext;
 
-                if (type === scriptContext.UserEventType.DELETE) return null;
+                if (type !== scriptContext.UserEventType.CREATE) return null;
 
-                newRecord = record.load({
-                    type: newRecord.type,
-                    id: newRecord.id
-                });
-
-                fillItemReceiptFields(newRecord);
-
-                newRecord.save({
-                    ignoreMandatoryFields: true
-                });
+                updateItemReceipt(newRecord);
 
             } catch (e) {
                 log.error({
@@ -52,65 +41,19 @@ define([
 
         }
 
-        const fillItemReceiptFields = (newRecord) => {
+        const updateItemReceipt = (newRecord) => {
 
-            try {
-
-                const inboundShipment = newRecord.getValue({
-                    fieldId: "inboundshipment"
-                });
-
-                if(!inboundShipment) return null;
-
-                const inboundShipmentData = searchModule.getInboundShipmentData(inboundShipment);
-
-                const lineCount = newRecord.getLineCount({
-                    sublistId: "item"
-                });
-
-                for (let index = 0; index < lineCount; index++) {
-
-                    let thisItem = newRecord.getSublistValue({
-                        sublistId: "item",
-                        fieldId: "item",
-                        line: index
-                    });
-
-                    let thisQuantity = newRecord.getSublistValue({
-                        sublistId: "item",
-                        fieldId: "quantity",
-                        line: index
-                    });
-
-                    let dateOfManufacture = inboundShipmentData.lines
-                        .filter(function(line) { return line.item === thisItem && line.quantity === thisQuantity; })
-                        .map(function(line) { return line.dateOfManufacture; })[0];
-
-                    newRecord.setSublistValue({
-                        sublistId: "item",
-                        fieldId: "custcol_pd_mir_manu_date_ts",
-                        line: index,
-                        value: dateOfManufacture
-                    });
-
-                }
-
-                newRecord.setValue({
-                    fieldId: "custbody_wr",
-                    value: inboundShipmentData.wrCode
-                });
-
-            } catch (e) {
-
-                log.error({
-                    title: "ERROR IN - fillItemReceiptFields",
-                    details: {
-                        stack: e.stack,
-                        message: e.message
-                    }
-                });
-
-            }
+            const requestRestlet = https.requestRestlet({
+                method: https.Method.GET,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                urlParams: {
+                    "itemReceiptId": newRecord.id
+                },
+                scriptId: "customscript_pd_frf_rec_ind_ship_rl",
+                deploymentId: "customdeploy_pd_frf_rec_ind_ship_rl"
+            });
 
         }
 
