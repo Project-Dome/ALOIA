@@ -2,10 +2,11 @@
  * @NApiVersion 2.1
  */
 define([
-        "N/record"
+        "N/record",
+        "N/query"
     ],
     
-    (record) => {
+    (record, query) => {
 
         const handler = {}
 
@@ -32,7 +33,7 @@ define([
 
                 let quantity = inboundShipment.getSublistValue({
                     sublistId: "items",
-                    fieldId: "quantityreceived",
+                    fieldId: "custrecord_pd_received_quantity",
                     line: index
                 });
 
@@ -56,6 +57,16 @@ define([
                 }),
                 lines
             }
+
+        }
+
+        handler.getInboundShipmentId = (inboundShipmentNumber) => {
+
+            return query.runSuiteQL({
+                query: (`SELECT id
+                         FROM inboundShipment
+                         WHERE shipmentnumber = '${inboundShipmentNumber}'`)
+            }).asMappedResults()[0].id;
 
         }
 

@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_pd_frf_rec_ind_ship_rl">
+  <description>Fill in the item receipt fields according to the inbound shipment record.</description>
+  <isinactive>F</isinactive>
+  <name>PD | FRF | Receive Ind. Ship.RL</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/project_dome/pd_frf_fill_receive_fields/item_receipt/restlet/pd_frf_fill_receive_fields_rl.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_pd_frf_rec_ind_ship_rl">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole>ONLINE_FORM_USER</audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>RELEASED</status>
+      <title>PD | FRF | Receive Ind. Ship.RL</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>
