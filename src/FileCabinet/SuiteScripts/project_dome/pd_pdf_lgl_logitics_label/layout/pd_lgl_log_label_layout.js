@@ -33,6 +33,8 @@ define([],
                                             codetype="code39"
                                             showtext="false"
                                             value="${escapeXml(result.pn)}"
+                                            height="15pt"
+                                            width="160pt"
                                         />
                                     </td>
                                 </tr>
@@ -48,7 +50,7 @@ define([],
                                 </tr>
                                  <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">SN:</span> ${escapeXml(result.sn)}
+                                        <span class="bold-text">SN:</span> ${result.is_serie === "T" ? escapeXml(result.sn) : "N/A"}
                                     </td>
                                 </tr>
                                 <tr>
@@ -64,7 +66,7 @@ define([],
                                         <span class="bold-text">COND:</span> ${escapeXml(result.cond)}
                                     </td>
                                     <td class="font_medium align_left">
-                                        <span class="bold-text">REC. DATE:</span> ${result.rec_date}
+                                        <span class="bold-text">REC. DATE:</span> ${result.rec_date || ""}
                                     </td>
                                 </tr>
                                 <tr>
@@ -72,7 +74,7 @@ define([],
                                         <span class="bold-text">UOM:</span> ${escapeXml(result.uom)}
                                     </td>
                                     <td class="font_medium align_left">
-                                        <span class="bold-text">MFG LOT#:</span> ${escapeXml(result.sn)}
+                                        <span class="bold-text">MFG LOT#:</span> ${result.is_serie === "F" ? escapeXml(result.sn) : "N/A"}
                                     </td>
                                 </tr>
                                 <tr>
@@ -87,7 +89,7 @@ define([],
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">EXP DATE:</span> ${result.exp_date}
+                                        <span class="bold-text">EXP DATE:</span> ${result.exp_date || ""}
                                     </td>
                                 </tr>
                                 <tr>
@@ -117,6 +119,7 @@ define([],
                                             showtext="false"
                                             value="${escapeXml(result.qty)}"
                                             height="10pt"
+                                            width="50pt"
                                         />
                             
                                         <div class="font_medium">
