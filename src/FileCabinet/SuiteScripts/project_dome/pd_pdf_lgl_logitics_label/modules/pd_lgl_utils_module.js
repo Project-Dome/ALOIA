@@ -9,7 +9,12 @@ define([
 
         const handler = {}
 
-        handler.getXmlParameters = (salesOrderId) => {
+        handler.getXmlParameters = (invoiceId) => {
+
+            log.debug({
+                title: "INVOICE ID",
+                details: invoiceId
+            });
 
             return query.runSuiteQL({
                 query: (`SELECT pn_number.NAME                                AS pn,
@@ -17,6 +22,7 @@ define([
                                 invn.inventorynumber                          AS sn,
                                 CASE WHEN i.isserialitem = 'T' THEN 'T' ELSE 'F' END AS is_serie,
                                 ia.quantity                                   AS qty,
+                                mfg.companyname                               AS manufacturer,
                                 po.tranid                                     AS po_number,
                                 To_char(t.trandate, 'MM/DD/YYYY')             AS rec_date,
                                 To_char(invn.expirationdate, 'MM/DD/YYYY')    AS exp_date,
@@ -24,6 +30,8 @@ define([
                                 unitstype.NAME                                AS uom,
                                 loc.NAME                                      AS location,
                                 t.custbody_wr                                 AS receiver,
+                                inv.custbody_pd_lastcerifiedagency            AS tagged_by,
+                                inv.custbody_pd_remarks                       AS remark,
                                 customer.companyname                          AS notes_customer,
                                 so.otherrefnum                                AS notes_po,
                                 inv.tranid                                    AS notes_invoice
@@ -74,9 +82,11 @@ define([
                                               ON invl.TRANSACTION = inv.id
                                                   AND invl.item = tl.item
                                                   AND invl.mainline = 'F'
+                                    LEFT JOIN vendor mfg
+                                              ON mfg.id = invl.custcol_aae_manufacturer
                          WHERE  t.type = 'ItemRcpt'
                            AND tl.mainline = 'F'
-                           AND so.id = '${salesOrderId}'
+                           AND inv.id = '${invoiceId}'
                          ORDER  BY t.trandate DESC,
                                    tl.linesequencenumber,
                                    ia.id`)

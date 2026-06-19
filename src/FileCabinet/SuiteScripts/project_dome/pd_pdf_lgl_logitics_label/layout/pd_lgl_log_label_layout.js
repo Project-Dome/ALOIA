@@ -30,7 +30,7 @@ define([],
                                 <tr>
                                     <td colspan="2" class="align_left">
                                         <barcode
-                                            codetype="code39"
+                                            codetype="code128"
                                             showtext="false"
                                             value="${escapeXml(result.pn)}"
                                             height="15pt"
@@ -55,7 +55,7 @@ define([],
                                 </tr>
                                 <tr>
                                     <td class="font_medium align_left">
-                                        <span class="bold-text">MFG CODE:</span>
+                                        <span class="bold-text">MFG CODE:</span> ${escapeXml(result.manufacturer)}
                                     </td>
                                     <td class="font_medium align_left">
                                         <span class="bold-text">PO:</span> ${escapeXml(result.po_number)}
@@ -94,17 +94,17 @@ define([],
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">TAGGED BY:</span>
+                                        <span class="bold-text">TAGGED BY:</span> ${escapeXml(result.tagged_by)}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">CERT SOURCE:</span>
+                                        <span class="bold-text">CERT SOURCE:</span> ${escapeXml(result.tagged_by)}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">REMARK:</span>
+                                        <span class="bold-text">REMARK:</span> ${escapeXml(result.remark)}
                                     </td>
                                 </tr>
                             </table>
@@ -115,7 +115,7 @@ define([],
                                     <td width="70pt" valign="top">
                             
                                         <barcode
-                                            codetype="code39"
+                                            codetype="code128"
                                             showtext="false"
                                             value="${escapeXml(result.qty)}"
                                             height="10pt"

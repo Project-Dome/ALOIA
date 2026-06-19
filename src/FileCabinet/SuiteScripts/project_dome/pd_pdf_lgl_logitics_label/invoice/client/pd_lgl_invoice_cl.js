@@ -32,7 +32,7 @@ define([
                     scriptId: cts.CUSTOM_SCRIPT.SUITELET.PRINT_LOG_LABEL.ID,
                     deploymentId:  cts.CUSTOM_SCRIPT.SUITELET.PRINT_LOG_LABEL.DEPLOY,
                     params: {
-                        salesorderid: parameters
+                        invoiceid: parameters
                     }
                 });
 
