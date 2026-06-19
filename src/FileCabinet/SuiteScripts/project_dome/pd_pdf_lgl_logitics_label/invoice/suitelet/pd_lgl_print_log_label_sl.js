@@ -30,7 +30,12 @@ define([
                     parameters
                 } = request;
 
-                const pdfParameters = utilsMd.getXmlParameters(parameters.salesorderid);
+                log.debug({
+                    title: "PARAMETERS",
+                    details: parameters
+                })
+
+                const pdfParameters = utilsMd.getXmlParameters(parameters.invoiceid);
 
                 const html = logLabelLayout.getXml(pdfParameters);
 
