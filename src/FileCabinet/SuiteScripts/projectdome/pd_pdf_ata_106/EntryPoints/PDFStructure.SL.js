@@ -137,7 +137,7 @@ function getAckFromCreatedFrom(invoice) {
      var description = invoice.getSublistValue({ sublistId:'item', fieldId:'description', line:i }) || '';
 var quantity = invoice.getSublistValue({ sublistId:'item', fieldId:'quantity', line:i });
 var statusTxt      = invoice.getSublistText({ sublistId:'item', fieldId: COL_STATUS_ON_LINE, line:i }) || '';
-var manufId   = invoice.getSublistValue({ sublistId:'item', fieldId:'custcol_aae_manufacturer', line:i }) || '';
+var manufId   = invoice.getSublistValue({ sublistId:'item', fieldId:'custcol_pd_aae_manufacturer', line:i }) || '';
 var manufName = '';
 if (manufId) {
     try {
