@@ -51,7 +51,7 @@ define([],
                 form.addButton({
                     id: "custpage_print_shipping_label_btn",
                     label: "PDF | Print Shipping Label",
-                    functionName: `printShippingLabel(${JSON.stringify(createdFrom)})`
+                    functionName: `printShippingLabel(${JSON.stringify(newRecord.id)})`
                 });
 
             } catch (e) {
