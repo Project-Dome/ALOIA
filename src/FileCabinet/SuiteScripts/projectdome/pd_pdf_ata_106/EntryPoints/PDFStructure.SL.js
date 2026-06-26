@@ -162,6 +162,12 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     line: i
                 }) || '';
 
+                var conversionFactor = Number(invoice.getSublistValue({
+                    sublistId: 'item',
+                    fieldId: 'custcol_aae_measurement_conversion',
+                    line: i
+                })) || 1;
+
                 // Seriais
                 try {
                     var invDet = invoice.getSublistSubrecord({sublistId: 'item', fieldId: 'inventorydetail', line: i});
@@ -192,7 +198,7 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
 
                                 if (sn && sn.inventorynumber) rows.push({
                                     description: description,
-                                    quantity: lotQuantity,
+                                    quantity: lotQuantity * conversionFactor,
                                     statusText: statusTxt,
                                     statusVal: statusVal,
                                     manufacturerName: manufName,
@@ -207,7 +213,7 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     } else {
                         rows.push({
                             description: description,
-                            quantity: quantity,
+                            quantity: quantity * conversionFactor,
                             statusText: statusTxt,
                             statusVal: statusVal,
                             manufacturerName: manufName,
