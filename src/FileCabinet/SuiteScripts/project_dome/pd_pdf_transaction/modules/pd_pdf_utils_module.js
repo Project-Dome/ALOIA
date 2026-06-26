@@ -2,10 +2,10 @@
  * @NApiVersion 2.1
  */
 define([
-        "N/format",
-        "./pd_pdf_search_module",
-        "./pd_pdf_const_module"
-    ],
+    "N/format",
+    "./pd_pdf_search_module",
+    "./pd_pdf_const_module"
+],
 
     (format, searchModule, cts) => {
 
@@ -125,8 +125,8 @@ define([
                 });
 
                 PDFParameters["awb"] = newRecord.getText({
-    fieldId: "custbody_17track_number"
-});
+                    fieldId: "custbody_17track_number"
+                });
 
                 PDFParameters["invoiceItems"] = [];
 
@@ -185,7 +185,7 @@ define([
 
                     itemLine["quantity"] = newRecord.getSublistValue({
                         sublistId: "item",
-                        fieldId: "quantity",
+                        fieldId: "custcol_aee_quantity_sales",
                         line: index
                     });
 
@@ -217,6 +217,10 @@ define([
                         sublistId: "item",
                         fieldId: "custcol_pd_unit_price_sales",
                         line: index
+                    }) || newRecord.getSublistValue({
+                        sublistId: "item",
+                        fieldId: "rate",
+                        line: index
                     });
 
                     itemLine["UOM"] = newRecord.getSublistText({
@@ -244,6 +248,16 @@ define([
                     });
 
                     itemLine["itemName"] = partNumberCustomer;
+
+                    let partNumberVendor = newRecord.getSublistValue({
+                        sublistId: "item",
+                        fieldId: "custcol_pd_partnumbervendor_display",
+                        line: index
+                    });
+
+                    if (partNumberVendor && partNumberVendor !== partNumberCustomer) {
+                        itemLine["partNumberVendor"] = partNumberVendor;
+                    }
 
                     // Each lot is kept as its own object with its own dates
                     const inventoryData = getInventoryData(index, newRecord);
@@ -458,8 +472,8 @@ define([
             if (!date) return '';
             const d = new Date(date);
             const hours = String(d.getUTCHours()).padStart(2, '0');
-            const mins  = String(d.getUTCMinutes()).padStart(2, '0');
-            const secs  = String(d.getUTCSeconds()).padStart(2, '0');
+            const mins = String(d.getUTCMinutes()).padStart(2, '0');
+            const secs = String(d.getUTCSeconds()).padStart(2, '0');
             return `${hours}:${mins}:${secs}`;
         }
 
