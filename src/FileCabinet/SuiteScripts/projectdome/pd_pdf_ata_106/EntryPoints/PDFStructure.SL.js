@@ -147,7 +147,11 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     sublistId: 'item',
                     fieldId: 'custcol_pd_aae_manufacturer',
                     line: i
-                }) || '';
+                }) || invoice.getSublistValue({
+                    sublistId: 'item',
+                    fieldId: 'custcol_aae_manufacturer',
+                    line: i
+                }) || "";
                 var manufName = '';
                 if (manufId) {
                     try {
