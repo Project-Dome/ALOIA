@@ -2,8 +2,8 @@
  * @NApiVersion 2.1
  */
 define([
-        "N/runtime"
-    ],
+    "N/runtime"
+],
 
     (runtime) => {
 
@@ -723,47 +723,51 @@ define([
         }
 
         function createDynamicHtml(parameters, index) {
-    let itemObjectIndex = parameters.invoiceItems[index];
-    let dynamicHtml = '';
+            let itemObjectIndex = parameters.invoiceItems[index];
+            let dynamicHtml = '';
 
-    if (itemObjectIndex.hasOwnProperty("description") && itemObjectIndex.description)
-        dynamicHtml += '<tr><td colspan="2">' + escapeXml(itemObjectIndex.description) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("partNumberVendor"))
+                dynamicHtml += '<tr><td colspan="2">PN Vendor: ' + escapeXml(itemObjectIndex.partNumberVendor) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("inventoryNumber")) {
+
+            if (itemObjectIndex.hasOwnProperty("description") && itemObjectIndex.description)
+                dynamicHtml += '<tr><td colspan="2">' + escapeXml(itemObjectIndex.description) + '</td></tr>';
+
+            if (itemObjectIndex.hasOwnProperty("inventoryNumber")) {
         itemObjectIndex.inventoryNumber.split('\n').forEach(function(lot) {
-            dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(lot) + '</td></tr>';
-        });
-    }
+                    dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(lot) + '</td></tr>';
+                });
+            }
 
-    if (itemObjectIndex.hasOwnProperty("manufacturer"))
-        dynamicHtml += '<tr><td colspan="2">MFG by: ' + escapeXml(itemObjectIndex.manufacturer) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("manufacturer"))
+                dynamicHtml += '<tr><td colspan="2">MFG by: ' + escapeXml(itemObjectIndex.manufacturer) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("originCountry") && itemObjectIndex.originCountry)
-        dynamicHtml += '<tr><td colspan="2">Country of Origin: ' + escapeXml(itemObjectIndex.originCountry) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("originCountry") && itemObjectIndex.originCountry)
+                dynamicHtml += '<tr><td colspan="2">Country of Origin: ' + escapeXml(itemObjectIndex.originCountry) + '</td></tr>';
 
-    if ((itemObjectIndex.hasOwnProperty("hsCode") && itemObjectIndex.hsCode) || (itemObjectIndex.hasOwnProperty("eccn") && itemObjectIndex.eccn))
-        dynamicHtml += '<tr><td colspan="2">HS Code: ' + escapeXml(itemObjectIndex.hsCode || '') + ' - ECCN: ' + escapeXml(itemObjectIndex.eccn || '') + '</td></tr>';
+            if ((itemObjectIndex.hasOwnProperty("hsCode") && itemObjectIndex.hsCode) || (itemObjectIndex.hasOwnProperty("eccn") && itemObjectIndex.eccn))
+                dynamicHtml += '<tr><td colspan="2">HS Code: ' + escapeXml(itemObjectIndex.hsCode || '') + ' - ECCN: ' + escapeXml(itemObjectIndex.eccn || '') + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("scheduleB"))
-        dynamicHtml += '<tr><td colspan="2">Schedule B: ' + escapeXml(itemObjectIndex.scheduleB) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("scheduleB"))
+                dynamicHtml += '<tr><td colspan="2">Schedule B: ' + escapeXml(itemObjectIndex.scheduleB) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("manuAdress"))
-        dynamicHtml += '<tr><td colspan="2">Manufacturer Address: ' + escapeXml(itemObjectIndex.manuAdress) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("manuAdress"))
+                dynamicHtml += '<tr><td colspan="2">Manufacturer Address: ' + escapeXml(itemObjectIndex.manuAdress) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("customerReference"))
-        dynamicHtml += '<tr><td colspan="2">Customer Reference: ' + escapeXml(itemObjectIndex.customerReference) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("customerReference"))
+                dynamicHtml += '<tr><td colspan="2">Customer Reference: ' + escapeXml(itemObjectIndex.customerReference) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("hazMat"))
-        dynamicHtml += '<tr><td colspan="2">HazMat: ' + escapeXml(itemObjectIndex.hazMat) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("hazMat"))
+                dynamicHtml += '<tr><td colspan="2">HazMat: ' + escapeXml(itemObjectIndex.hazMat) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("itemNotes") && itemObjectIndex.itemNotes)
-        dynamicHtml += '<tr><td colspan="2">Item Notes: ' + escapeXml(itemObjectIndex.itemNotes) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("itemNotes") && itemObjectIndex.itemNotes)
+                dynamicHtml += '<tr><td colspan="2">Item Notes: ' + escapeXml(itemObjectIndex.itemNotes) + '</td></tr>';
 
-    if (itemObjectIndex.hasOwnProperty("trace") && itemObjectIndex.trace)
-        dynamicHtml += '<tr><td colspan="2">Item Trace: ' + escapeXml(itemObjectIndex.trace) + '</td></tr>';
+            if (itemObjectIndex.hasOwnProperty("trace") && itemObjectIndex.trace)
+                dynamicHtml += '<tr><td colspan="2">Item Trace: ' + escapeXml(itemObjectIndex.trace) + '</td></tr>';
 
-    return dynamicHtml;
-}
+            return dynamicHtml;
+        }
 
         function createDynamicSing(parameters) {
             if (parameters.signature) {
@@ -780,34 +784,34 @@ define([
             return '';
         }
 
-function formatAddress(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;')
-        .replace(/\n/g, '<br/>');
-}
+        function formatAddress(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;')
+                .replace(/\n/g, '<br/>');
+        }
 
-function formatBoxDimensions(str) {
-    if (!str) return '<tr><td style="width:15%;" class="dimensions-cell dimensions-label">Box Dimensions:</td><td class="dimensions-cell"></td></tr>';
+        function formatBoxDimensions(str) {
+            if (!str) return '<tr><td style="width:15%;" class="dimensions-cell dimensions-label">Box Dimensions:</td><td class="dimensions-cell"></td></tr>';
     const boxes = str.split(';').map(function(s){ return s.trim(); }).filter(function(s){ return s; });
     return boxes.map(function(s, i){
-        const labelCell = i === 0
-            ? '<td style="width:15%; vertical-align:top;" class="dimensions-cell dimensions-label">Box Dimensions:</td>'
-            : '<td style="width:15%;" class="dimensions-cell"></td>';
-        const valueCell = '<td style="width:85%; vertical-align:top;" class="dimensions-cell">' + String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;') + '</td>';
-        return '<tr>' + labelCell + valueCell + '</tr>';
-    }).join('');
-}
-      
+                const labelCell = i === 0
+                    ? '<td style="width:15%; vertical-align:top;" class="dimensions-cell dimensions-label">Box Dimensions:</td>'
+                    : '<td style="width:15%;" class="dimensions-cell"></td>';
+                const valueCell = '<td style="width:85%; vertical-align:top;" class="dimensions-cell">' + String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&apos;') + '</td>';
+                return '<tr>' + labelCell + valueCell + '</tr>';
+            }).join('');
+        }
+
         return handler;
 
     });
