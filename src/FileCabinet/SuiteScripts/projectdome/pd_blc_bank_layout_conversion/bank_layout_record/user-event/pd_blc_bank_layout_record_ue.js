@@ -31,7 +31,15 @@ define([
 
             try {
 
-                if (type === scriptContext.UserEventType.CREATE) converStatementToNetsuite(newRecord, values);
+                if (type === scriptContext.UserEventType.CREATE) {
+
+                    const originConversion = newRecord.getValue({
+                        fieldId: cts.CUSTOM_RECORD.BANK_LAYOUT_CONVERSION.FIELDS.ORIGIN_CONVERSION
+                    });
+
+                    converStatementToNetsuite(newRecord, values, originConversion);
+
+                }
 
                 if (Object.keys(values).length > 0) record.submitFields({
                     id: newRecord.id,
@@ -53,7 +61,7 @@ define([
 
         }
 
-        const converStatementToNetsuite = (newRecord, values) => {
+        const converStatementToNetsuite = (newRecord, values, originConversion) => {
 
             try {
 
@@ -73,7 +81,7 @@ define([
                     fieldId: cts.CUSTOM_RECORD.BANK_LAYOUT_CONVERSION.FIELDS.STATUS
                 }));
 
-                if (convertStatus !== cts.CUSTOM_LIST.LAYOUT_CONVERSION_STATUS.VALUES.PENDING) return null;
+                // if (convertStatus !== cts.CUSTOM_LIST.LAYOUT_CONVERSION_STATUS.VALUES.PENDING) return null;
 
                 const fileData = bank_layout_service.getStatementFileContents(fileIdToConvert);
 
@@ -85,9 +93,11 @@ define([
                     fieldId: cts.CUSTOM_SCRIPT.USEREVENT.PARAMS.FOLDER_ID
                 });
 
-                if(!statementParsedFolderId) throw new Error("Go to Setup > Company > General Preferences > Custom Preferences and enter the folder where you will store the converted files.");
+                if (!statementParsedFolderId) throw new Error("Go to Setup > Company > General Preferences > Custom Preferences and enter the folder where you will store the converted files.");
 
-                const convertedFileId = bank_layout_service.convertStatementToNetsuite(fileData.fileContents, statementParsedFolderId, fileData.fileName);
+                const convertedFileId = Number(originConversion) === cts.CUSTOM_LIST.CONVERSION_ORIGIN.VALUES.BANK_OF_AMERICA ?
+                    bank_layout_service.convertStatementToNetsuite(fileData.fileContents, statementParsedFolderId, fileData.fileName) :
+                    bank_layout_service.convertCashProXlsxToNetsuite(fileData.fileContents, statementParsedFolderId, fileData.fileName);
 
                 if (!convertedFileId) throw new Error("An unexpected error occurred while converting the file.");
 
