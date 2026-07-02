@@ -1,0 +1,19 @@
+<customlist scriptid="customlist_pd_blc_origin_conversion">
+  <description></description>
+  <isinactive>F</isinactive>
+  <ismatrixoption>F</ismatrixoption>
+  <isordered>T</isordered>
+  <name>PD | BLC | Origin Conversion</name>
+  <customvalues>
+    <customvalue scriptid="val_2241436_11559462_sb1_908">
+      <abbreviation>B</abbreviation>
+      <isinactive>F</isinactive>
+      <value>Bank Of America</value>
+    </customvalue>
+    <customvalue scriptid="val_2241437_11559462_sb1_474">
+      <abbreviation>C</abbreviation>
+      <isinactive>F</isinactive>
+      <value>CashPro</value>
+    </customvalue>
+  </customvalues>
+</customlist>
