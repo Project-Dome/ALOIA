@@ -2,8 +2,8 @@
  * @NApiVersion 2.1
  */
 define([
-    "N/runtime"
-],
+        "N/runtime"
+    ],
 
     (runtime) => {
 
@@ -363,7 +363,7 @@ define([
 
         function getPDFBody(parameters, index, arrayLength) {
 
-            const termsCondition = runtime.getCurrentScript().getParameter({ name: "custscript_pd_invoice_terms_condition_ds" });
+            const termsCondition = runtime.getCurrentScript().getParameter({name: "custscript_pd_invoice_terms_condition_ds"});
 
             const itemArrayObject = parameters.invoiceItems[index];
 
@@ -736,9 +736,7 @@ define([
                 dynamicHtml += '<tr><td colspan="2">' + escapeXml(itemObjectIndex.description) + '</td></tr>';
 
             if (itemObjectIndex.hasOwnProperty("inventoryNumber")) {
-                itemObjectIndex.inventoryNumber.split('\n').forEach(function (lot) {
-                    dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(lot) + '</td></tr>';
-                });
+                dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(itemObjectIndex["inventoryNumber"]) + '</td></tr>';
             }
 
             if (itemObjectIndex.hasOwnProperty("manufacturer"))

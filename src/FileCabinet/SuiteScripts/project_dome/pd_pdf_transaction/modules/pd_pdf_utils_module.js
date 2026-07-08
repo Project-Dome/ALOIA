@@ -2,10 +2,10 @@
  * @NApiVersion 2.1
  */
 define([
-    "N/format",
-    "./pd_pdf_search_module",
-    "./pd_pdf_const_module"
-],
+        "N/format",
+        "./pd_pdf_search_module",
+        "./pd_pdf_const_module"
+    ],
 
     (format, searchModule, cts) => {
 
@@ -62,7 +62,7 @@ define([
                 });
 
                 if (employeeId) {
-                    const { entityid, signatureId } = searchModule.getEmployeeLookup(employeeId);
+                    const {entityid, signatureId} = searchModule.getEmployeeLookup(employeeId);
                     PDFParameters["signature"] = signatureId;
                     PDFParameters["recordcreatedby"] = entityid;
                 }
@@ -71,7 +71,7 @@ define([
                     fieldId: "entity"
                 });
 
-                const { entitynumber } = searchModule.getCustomerLookup(customerId);
+                const {entitynumber} = searchModule.getCustomerLookup(customerId);
                 PDFParameters["entitynumber"] = entitynumber;
 
                 PDFParameters["buyer"] = newRecord.getValue({
@@ -101,8 +101,8 @@ define([
 
                 PDFParameters["delivery"] = incontermsSale + " " + incontermsLocation;
 
-                const shipViaCarrier = newRecord.getText({ fieldId: "custbody_pd_shipvia_carrier" }) || '';
-                const shipViaMethod  = newRecord.getText({ fieldId: "custbody_pd_ship_method_tran" }) || '';
+                const shipViaCarrier = newRecord.getText({fieldId: "custbody_pd_shipvia_carrier"}) || '';
+                const shipViaMethod = newRecord.getText({fieldId: "custbody_pd_ship_method_tran"}) || '';
 
                 PDFParameters["shipVia"] = [shipViaCarrier, shipViaMethod]
                     .filter(v => v)
@@ -260,12 +260,12 @@ define([
                     }
 
                     // Each lot is kept as its own object with its own dates
-                    const inventoryData = getInventoryData(index, newRecord);
-                    if (inventoryData) {
-                        itemLine["inventoryNumber"] = inventoryData
-                            .map(lot => formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate))
-                            .join('\n');
-                    }
+                    // const inventoryData = getInventoryData(index, newRecord);
+                    // if (inventoryData) {
+                    //     itemLine["inventoryNumber"] = inventoryData
+                    //         .map(lot => formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate))
+                    //         .join('\n');
+                    // }
 
                     let manufacturer = newRecord.getSublistText({
                         sublistId: "item",
@@ -337,9 +337,30 @@ define([
 
                     if (scheduleB) itemLine["scheduleB"] = scheduleB;
 
-                    PDFParameters["invoiceItems"].push(itemLine);
+                    let conversionFactor = Number(newRecord.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_aae_measurement_conversion',
+                        line: index
+                    })) || 1;
+
+                    const inventoryData = getInventoryData(index, newRecord);
+                    if (inventoryData) {
+                        inventoryData.forEach(lot => {
+                            itemLine["quantity"] = Number(lot.quantity) * conversionFactor;
+                            lot = formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate)
+                            itemLine["inventoryNumber"] = lot;
+                            PDFParameters["invoiceItems"].push({...itemLine});
+                        });
+                    } else {
+                        PDFParameters["invoiceItems"].push(itemLine);
+                    }
 
                 }
+
+                log.debug({
+                    title: "invoiceItems",
+                    details: PDFParameters["invoiceItems"]
+                })
 
                 PDFParameters["boxDimensions"] = newRecord.getValue({
                     fieldId: "custbody_pd_box_dimensions"
@@ -373,7 +394,7 @@ define([
                     fieldId: "taxtotal"
                 });
 
-                PDFParameters["createddate"] = formatDateTimeForPDF(newRecord.getValue({ fieldId: 'createddate' }));
+                PDFParameters["createddate"] = formatDateTimeForPDF(newRecord.getValue({fieldId: 'createddate'}));
 
                 PDFParameters["subTotal"] = subTotal;
                 PDFParameters["miscChargeTotal"] = miscChargeTotal;
@@ -419,7 +440,13 @@ define([
 
                 const lotInternalId = inventoryDetailSubrecord.getSublistValue({
                     sublistId: "inventoryassignment",
-                    fieldId: "numberedrecordid",
+                    fieldId: "issueinventorynumber",
+                    line: i
+                });
+
+                const lotQuantity = inventoryDetailSubrecord.getSublistValue({
+                    sublistId: "inventoryassignment",
+                    fieldId: "quantity",
                     line: i
                 });
 
@@ -434,7 +461,8 @@ define([
                                 : null,
                             manufacturedDate: lotData.custitemnumber_aln_manufactured_date
                                 ? new Date(lotData.custitemnumber_aln_manufactured_date).toISOString()
-                                : null
+                                : null,
+                            quantity: lotQuantity,
                         });
                     }
                 }
