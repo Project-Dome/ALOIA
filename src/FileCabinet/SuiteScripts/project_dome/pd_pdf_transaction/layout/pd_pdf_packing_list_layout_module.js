@@ -734,9 +734,7 @@ define([
                 dynamicHtml += '<tr><td colspan="2">' + escapeXml(itemObjectIndex.description) + '</td></tr>';
 
             if (itemObjectIndex.hasOwnProperty("inventoryNumber")) {
-        itemObjectIndex.inventoryNumber.split('\n').forEach(function(lot) {
-                    dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(lot) + '</td></tr>';
-                });
+                dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(itemObjectIndex["inventoryNumber"]) + '</td></tr>';
             }
 
             if (itemObjectIndex.hasOwnProperty("manufacturer"))
