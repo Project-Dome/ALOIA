@@ -27,7 +27,7 @@ define([
                                 To_char(t.trandate, 'MM/DD/YYYY')             AS rec_date,
                                 To_char(invn.expirationdate, 'MM/DD/YYYY')    AS exp_date,
                                 item_status.NAME                              AS cond,
-                                unitstype.NAME                                AS uom,
+                                sales_uom.unitname                                  AS uom,
                                 loc.NAME                                      AS location,
                                 t.custbody_wr                                 AS receiver,
                                 inv.custbody_pd_lastcerifiedagency            AS tagged_by,
@@ -58,8 +58,8 @@ define([
                                               ON pn_number.id = pol.custcol_pd_partnumbervendor
                                     LEFT JOIN customlist_pd_aae_status_item item_status
                                               ON item_status.id = tl.custcol_pd_aae_status_item
-                                    LEFT JOIN unitstype
-                                              ON unitstype.id = tl.units
+                                    LEFT JOIN unitstypeuom uom
+                                              ON uom.internalid = tl.units
                                     LEFT JOIN location loc
                                               ON loc.id = tl.location
                                     LEFT JOIN TRANSACTION so
@@ -84,6 +84,8 @@ define([
                                                   AND invl.mainline = 'F'
                                     LEFT JOIN vendor mfg
                                               ON mfg.id = invl.custcol_aae_manufacturer
+                                    LEFT JOIN unitstypeuom sales_uom
+                                              ON sales_uom.internalid = invl.custcol_aae_sales_units
                          WHERE  t.type = 'ItemRcpt'
                            AND tl.mainline = 'F'
                            AND inv.id = '${invoiceId}'
