@@ -18,50 +18,49 @@ define([
          * @since 2015.2
          */
         const onRequest = (scriptContext) => {
+    try {
+        const {
+            response,
+            request
+        } = scriptContext;
 
-            try {
+        const {
+            parameters
+        } = request;
+        log.debug({
+            title: "PARAMETERS",
+            details: parameters
+        })
+        const pdfParameters = utilsMd.getXmlParameters(parameters.invoiceid);
 
-                const {
-                    response,
-                    request
-                } = scriptContext;
-                
-                const {
-                    parameters
-                } = request;
+if (!pdfParameters || pdfParameters.length === 0) {
+    log.audit({
+        title: "NO DATA FOUND",
+        details: `Nenhum item receipt encontrado para invoice ${parameters.invoiceid}`
+    });
+    response.write("Não foi possível gerar a etiqueta: nenhum dado de recebimento vinculado a esta invoice.");
+    return;
+}
 
-                log.debug({
-                    title: "PARAMETERS",
-                    details: parameters
-                })
-
-                const pdfParameters = utilsMd.getXmlParameters(parameters.invoiceid);
-
-                const html = logLabelLayout.getXml(pdfParameters);
-
-                const renderer = render.create();
-                renderer.templateContent = html;
-
-                const pdfFile = renderer.renderAsPdf();
-
-                pdfFile.name = `SHIPPING_LABEL_${formatDate(new Date())}.pdf`;
-
-                response.writeFile({
-                    file: pdfFile,
-                    isInline: true
-                });
-
-            } catch (e) {
-                log.error({
-                    title: "ERROR IN - onRequest",
-                    details: {
-                        stack: e.stack,
-                        message: e.message
-                    }
-                });
+const html = logLabelLayout.getXml(pdfParameters);
+const renderer = render.create();
+renderer.templateContent = html;
+const pdfFile = renderer.renderAsPdf();
+pdfFile.name = `SHIPPING_LABEL_${formatDate(new Date())}.pdf`;
+response.writeFile({
+    file: pdfFile,
+    isInline: true
+});
+    } catch (e) {
+        log.error({
+            title: "ERROR IN - onRequest",
+            details: {
+                stack: e.stack,
+                message: e.message
             }
-
-        }
+        });
+    }
+}
 
         function formatDate(date) {
             date = date || new Date();

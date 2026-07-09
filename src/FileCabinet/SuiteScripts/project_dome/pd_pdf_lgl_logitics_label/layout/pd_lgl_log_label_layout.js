@@ -207,15 +207,15 @@ define([],
         }
 
         function escapeXml(str) {
-            if (!str && str != "0") return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&apos;')
-                .toUpperCase();
-        }
+           if (!str && str != "0") return '';
+           return String(str)
+        .toUpperCase()          // uppercase ANTES de escapar
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
 
         return handler;
 
