@@ -9,6 +9,9 @@ define(
         'N/log',
         'N/record',
         'N/search',
+        'N/format',
+        'N/runtime',
+        'N/query',
 
         '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-search.util.js',
         '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-record.util.js',
@@ -20,6 +23,9 @@ define(
         log,
         record,
         search,
+        format,
+        runtime,
+        query,
 
         search_util,
         record_util
@@ -39,12 +45,9 @@ define(
             shiftStart: 'custentity_pd_pow_shift_start',
             shiftEnd: 'custentity_pd_pow_shift_end',
             salesAssignedToday: 'custentity_pd_pow_sales_assigned_today',
-            lastSOAssignment: 'custentity_pd_last_so_assignment'
+            lastSOAssignment: 'custentity_pd_last_so_assignment',
+            timezone: 'custentity_pd_pow_timezone'
 
-        };
-
-        const SALES_ORDER_STATUS = {
-            onHold: '5'
         };
 
         function readData(options) {
@@ -72,62 +75,8 @@ define(
             }
         }
 
-        function assignBuyerToSO(idSalesOrder, options) {
+        function assignBuyerToSO(idSalesOrder) {
             try {
-
-                // Autoproteção: não atribuir buyer se todas as linhas estiverem marcadas
-                if (shouldSkipBuyerAssignment(idSalesOrder)) {
-                    log.debug({
-                        title: 'assignBuyerToSO - Skipped',
-                        details: `Sales Order ${idSalesOrder} marcada para não criar PR/PO em todas as linhas`
-                    });
-                    return null;
-                }
-
-                const forceRedistribution = options && options.forceRedistribution;
-
-                let _soLookup = search.lookupFields({
-                    type: TYPE,
-                    id: idSalesOrder,
-                    columns: [FIELDS.buyer.name]
-                });
-
-                let _currentBuyer = (_soLookup &&
-                    _soLookup[FIELDS.buyer.name] &&
-                    _soLookup[FIELDS.buyer.name].length)
-                    ? _soLookup[FIELDS.buyer.name][0].value
-                    : null;
-
-                if (_currentBuyer) {
-                    let _employeeRec = record.load({
-                        type: record.Type.EMPLOYEE,
-                        id: _currentBuyer
-                    });
-
-                    let _isOnLeave = _employeeRec.getValue({
-                        fieldId: EMPLOYEE_FIELDS.onLeave
-                    });
-
-                    if (!forceRedistribution || !_isOnLeave) {
-                        return _currentBuyer;
-                    }
-
-                    let _oldCount = parseInt(_employeeRec.getValue({
-                        fieldId: EMPLOYEE_FIELDS.salesAssignedToday
-                    }), 10) || 0;
-
-                    if (_oldCount > 0) {
-                        _employeeRec.setValue({
-                            fieldId: EMPLOYEE_FIELDS.salesAssignedToday,
-                            value: _oldCount - 1
-                        });
-
-                        _employeeRec.save({
-                            enableSourcing: false,
-                            ignoreMandatoryFields: true
-                        });
-                    }
-                }
 
                 let _buyers = getEligibleBuyers();
 
@@ -139,31 +88,16 @@ define(
                     return null;
                 }
 
-                // let _filteredBuyers = applyUrgencyRules(_buyers);
-                let _filteredBuyers = _buyers;
+                let _filteredBuyers = applyUrgencyRules(_buyers);
 
-                // let _chosenBuyer = pickBuyerByLeastLoad(_filteredBuyers);
-                let _chosenBuyer = pickBuyerByOldestLastAssignment(_filteredBuyers);
-
-                if (!_chosenBuyer) {
-                    log.debug({
-                        title: 'assignBuyerToSO - No chosen buyer',
-                        details: `No buyer selected for Sales Order ${idSalesOrder}`
-                    });
-                    return null;
-                }
-
-                updateSOBuyer(idSalesOrder, _chosenBuyer.id);
-                updateSOItemBuyerLines(idSalesOrder, _chosenBuyer.id); //Novo código
-                // incrementBuyerCounter(_chosenBuyer.id); //parar de controlar a sales order atribuídas.
-                updateEmployeeLastSOAssignment(_chosenBuyer.id); //registra o tempo no employee.
+                assignBuyerToLine(idSalesOrder, _filteredBuyers);
 
                 log.debug({
-                    title: 'assignBuyerToSO - Buyer assigned',
-                    details: `Sales Order ${idSalesOrder} -> Buyer ${_chosenBuyer.id}`
+                    title: 'assignBuyerToSO - Distribution complete',
+                    details: `Sales Order ${idSalesOrder} - lines distributed`
                 });
 
-                return _chosenBuyer.id;
+                return true;
 
             } catch (error) {
                 log.error({
@@ -176,11 +110,6 @@ define(
 
         function getEligibleBuyers() {
             try {
-                let _now = new Date();
-                let _nowMinutes = _now.getHours() * 60 + _now.getMinutes();
-
-                let _buyers = [];
-
                 let _employeeSearch = search.create({
                     type: search.Type.EMPLOYEE,
                     filters: [
@@ -196,9 +125,13 @@ define(
                         EMPLOYEE_FIELDS.salesAssignedToday,
                         EMPLOYEE_FIELDS.shiftStart,
                         EMPLOYEE_FIELDS.shiftEnd,
-                        EMPLOYEE_FIELDS.lastSOAssignment
+                        EMPLOYEE_FIELDS.lastSOAssignment,
+                        EMPLOYEE_FIELDS.timezone
                     ]
                 });
+
+                let _allBuyers = [];
+                let _timezoneMap = getTimezoneOlsonMap();
 
                 _employeeSearch.run().each(function (result) {
                     let _id = result.getValue('internalid');
@@ -206,34 +139,56 @@ define(
                     let _salesAssignedToday = parseInt(result.getValue(EMPLOYEE_FIELDS.salesAssignedToday), 10) || 0;
                     let _shiftStart = result.getValue(EMPLOYEE_FIELDS.shiftStart) || '';
                     let _shiftEnd = result.getValue(EMPLOYEE_FIELDS.shiftEnd) || '';
-                    let _lastSOAssignment = result.getValue(EMPLOYEE_FIELDS.lastSOAssignment) || '';
+                    let _lastSOAssignmentRaw = result.getValue(EMPLOYEE_FIELDS.lastSOAssignment) || '';
+                    let _lastSOAssignment = '';
+                    if (_lastSOAssignmentRaw) {
+                        try {
+                            let _parsed = format.parse({ value: _lastSOAssignmentRaw, type: format.Type.DATETIMETZ });
+                            _lastSOAssignment = (_parsed instanceof Date) ? _parsed.toISOString() : '';
+                        } catch (e) {
+                            _lastSOAssignment = '';
+                        }
+                    }
 
                     let _startMin = parseTimeToMinutes(_shiftStart);
                     let _endMin = parseTimeToMinutes(_shiftEnd);
+                    let _timezoneKey = parseInt(result.getValue(EMPLOYEE_FIELDS.timezone), 10) || null;
 
-                    let _inShift = true;
-
-                    if (_startMin !== null && _endMin !== null) {
-                        _inShift = isNowInShift(_nowMinutes, _startMin, _endMin);
+                    if (!_timezoneKey) {
+                        _timezoneKey = parseInt(runtime.getCurrentUser().getPreference({ name: 'TIMEZONE' }), 10) || null;
                     }
 
-                    if (_inShift) {
-                        _buyers.push({
-                            id: _id,
-                            name: _name,
-                            salesAssignedToday: _salesAssignedToday,
-                            lastSOAssignment: _lastSOAssignment,
-                            shiftStartMin: _startMin,
-                            shiftEndMin: _endMin
-                        });
-                    }
+                    let _timezoneId = _timezoneKey ? (_timezoneMap[_timezoneKey] || null) : null;
+
+                    _allBuyers.push({
+                        id: _id,
+                        name: _name,
+                        salesAssignedToday: _salesAssignedToday,
+                        lastSOAssignment: _lastSOAssignment,
+                        shiftStartMin: _startMin,
+                        shiftEndMin: _endMin,
+                        timezoneId: _timezoneId
+                    });
 
                     return true;
                 });
 
+                let _buyersInShift = _allBuyers.filter(function (b) {
+                    if (b.shiftStartMin === null || b.shiftEndMin === null) return true;
+                    let _nowMin = getNowMinutesInTimezone(b.timezoneId);
+                    return isNowInShift(_nowMin, b.shiftStartMin, b.shiftEndMin);
+                });
+
+                let _buyers = _buyersInShift;
+
                 log.debug({
                     title: 'getEligibleBuyers - Eligible buyers',
-                    details: _buyers
+                    details: {
+                        total: _allBuyers.length,
+                        inShift: _buyersInShift.length,
+                        noBuyersInShift: _buyersInShift.length === 0,
+                        buyers: _buyers
+                    }
                 });
 
                 return _buyers;
@@ -244,149 +199,6 @@ define(
                     details: error
                 });
                 return [];
-            }
-        }
-
-        function applyUrgencyRules(buyers) {
-            try {
-                let _filtered = [];
-                let _blockedCount = 0;
-
-                for (let i = 0; i < buyers.length; i++) {
-                    let _buyer = buyers[i];
-
-                    let _blockedByUrgency = isBuyerBlockedByUrgency(_buyer.id);
-                    let _blockedByOnHoldSO = isBuyerBlockedByOnHoldSO(_buyer.id);
-
-                    let _blocked = _blockedByUrgency || _blockedByOnHoldSO;
-
-                    log.debug({
-                        title: 'applyUrgencyRules - buyer block check',
-                        details: {
-                            buyerId: _buyer.id,
-                            blockedByUrgency: _blockedByUrgency,
-                            blockedByOnHoldSO: _blockedByOnHoldSO,
-                            finalBlocked: _blocked
-                        }
-                    });
-
-                    if (_blocked) {
-                        _blockedCount++;
-                    } else {
-                        _filtered.push(_buyer);
-                    }
-                }
-
-                if (_blockedCount === buyers.length) {
-                    return buyers;
-                }
-
-                return _filtered;
-
-            } catch (error) {
-                log.error({
-                    title: 'applyUrgencyRules - Error processing',
-                    details: error
-                });
-                return buyers || [];
-            }
-        }
-
-        function isBuyerBlockedByUrgency(employeeId) {
-            try {
-                let _prSearch = search.create({
-                    type: 'purchaserequisition',
-                    filters: [
-                        ['type', 'anyof', 'PurchReq'],
-                        'AND',
-                        ['mainline', 'is', 'T'],
-                        'AND',
-                        ['custbody_aae_urgency_order', 'anyof', '2'],
-                        'AND',
-                        ['custbody_aae_buyer', 'anyof', employeeId],
-                        'AND',
-                        ['status', 'anyof', 'PurchReq:B']
-                    ],
-                    columns: [
-                        'internalid',
-                        'status'
-                    ]
-                });
-
-                let _hasUrgentWithoutPO = false;
-                let _paged = _prSearch.runPaged({ pageSize: 100 });
-
-                outer:
-                for (let p = 0; p < _paged.pageRanges.length; p++) {
-                    let _page = _paged.fetch({ index: p });
-                    let _dataArr = _page.data;
-
-                    for (let r = 0; r < _dataArr.length; r++) {
-                        let _prId = _dataArr[r].getValue('internalid');
-
-                        let _poSearch = search.create({
-                            type: search.Type.PURCHASE_ORDER,
-                            filters: [
-                                ['createdfrom', 'anyof', _prId],
-                                'AND',
-                                ['mainline', 'is', 'T']
-                            ],
-                            columns: ['internalid']
-                        });
-
-                        let _poPaged = _poSearch.runPaged({ pageSize: 1 });
-
-                        if (_poPaged.count === 0) {
-                            _hasUrgentWithoutPO = true;
-                            break outer;
-                        }
-                    }
-                }
-
-                return _hasUrgentWithoutPO;
-
-            } catch (error) {
-                log.error({
-                    title: 'isBuyerBlockedByUrgency - Error processing',
-                    details: error
-                });
-                return false;
-            }
-        }
-
-        function isBuyerBlockedByOnHoldSO(employeeId) {
-            try {
-                let _soSearch = search.create({
-                    type: search.Type.SALES_ORDER,
-                    filters: [
-                        ['custbody_pd_sales_orderstatus', 'anyof', SALES_ORDER_STATUS.onHold],
-                        'AND',
-                        ['custbody_aae_buyer', 'anyof', employeeId],
-                        'AND',
-                        ['mainline', 'is', 'T']
-                    ],
-                    columns: ['internalid']
-                });
-
-                let _paged = _soSearch.runPaged({ pageSize: 1 });
-                let _blocked = (_paged.count > 0);
-
-                log.debug({
-                    title: 'isBuyerBlockedByOnHoldSO',
-                    details: {
-                        employeeId: employeeId,
-                        blockedByOnHoldSO: _blocked
-                    }
-                });
-
-                return _blocked;
-
-            } catch (error) {
-                log.error({
-                    title: 'isBuyerBlockedByOnHoldSO - Error processing',
-                    details: error
-                });
-                return false;
             }
         }
 
@@ -477,37 +289,6 @@ define(
             }
         }
 
-        function updateSOBuyer(idSalesOrder, idBuyer) {
-            try {
-                record.submitFields({
-                    type: TYPE,
-                    id: idSalesOrder,
-                    values: {
-                        custbody_aae_buyer: idBuyer
-                    },
-                    options: {
-                        enableSourcing: false,
-                        ignoreMandatoryFields: true
-                    }
-                });
-
-                log.debug({
-                    title: 'updateSOBuyer - Buyer updated',
-                    details: {
-                        salesOrderId: idSalesOrder,
-                        buyerId: idBuyer
-                    }
-                });
-
-            } catch (error) {
-                log.error({
-                    title: 'updateSOBuyer - Error processing',
-                    details: error
-                });
-                throw error;
-            }
-        }
-
         function parseTimeToMinutes(timeString) {
             try {
                 if (!timeString) return null;
@@ -561,53 +342,9 @@ define(
             }
         }
 
-        function shouldSkipBuyerAssignment(salesOrderId) {
+        function assignBuyerToLine(idSalesOrder, buyers) {
             try {
-                if (!salesOrderId) return false;
-
-                let _salesOrderRec = record.load({
-                    type: record.Type.SALES_ORDER,
-                    id: salesOrderId,
-                    isDynamic: false
-                });
-
-                let _lineCount = _salesOrderRec.getLineCount({
-                    sublistId: 'item'
-                });
-
-                if (!_lineCount || _lineCount === 0) {
-                    return false;
-                }
-
-                for (let i = 0; i < _lineCount; i++) {
-                    let _flag = _salesOrderRec.getSublistValue({
-                        sublistId: 'item',
-                        fieldId: 'custcol_pd_cso_dont_create_purchreq',
-                        line: i
-                    });
-
-                    if (_flag !== true && _flag !== 'T') {
-                        return false;
-                    }
-                }
-
-                return true;
-
-            } catch (error) {
-                log.error({
-                    title: 'shouldSkipBuyerAssignment - Error processing',
-                    details: error
-                });
-                return false;
-            }
-        }
-
-        function updateSOItemBuyerLines(idSalesOrder, idBuyer) {
-            try {
-
-                if (!idSalesOrder || !idBuyer) {
-                    return;
-                }
+                if (!idSalesOrder || !buyers || buyers.length === 0) return;
 
                 let _salesOrderRec = record.load({
                     type: record.Type.SALES_ORDER,
@@ -615,58 +352,152 @@ define(
                     isDynamic: false
                 });
 
-                let _lineCount = _salesOrderRec.getLineCount({
-                    sublistId: 'item'
-                });
+                let _lineCount = _salesOrderRec.getLineCount({ sublistId: 'item' });
+                if (!_lineCount || _lineCount === 0) return;
 
-                if (!_lineCount || _lineCount === 0) {
-                    return;
-                }
+                let _buyerPool = buyers.map(function (b) { return Object.assign({}, b); });
+                let _assignedBuyerIdsList = [];
+                let _nowBase = new Date().getTime();
+                let _offset = 0;
 
                 for (let i = 0; i < _lineCount; i++) {
+
+                    let _skipLine = _salesOrderRec.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_cso_dont_create_purchreq',
+                        line: i
+                    });
+
+                    if (_skipLine === true || _skipLine === 'T') continue;
+
+                    let _lineStatus = _salesOrderRec.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_aae_line_status',
+                        line: i
+                    });
+
+                    if (_lineStatus && String(_lineStatus) !== '4') continue;
+
+                    let _quantity = _salesOrderRec.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'quantity',
+                        line: i
+                    });
+
+                    if (!_quantity || parseFloat(_quantity) === 0) continue;
+
+                    let _linkedPO = _salesOrderRec.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_aae_purchaseorder',
+                        line: i
+                    });
+
+                    if (_linkedPO) continue;
+
+                    let _existingBuyer = _salesOrderRec.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_buyer_purchorder_initial',
+                        line: i
+                    });
+
+                    if (_existingBuyer) continue;
+
+                    let _chosenBuyer = pickBuyerByOldestLastAssignment(_buyerPool);
+                    if (!_chosenBuyer) continue;
 
                     _salesOrderRec.setSublistValue({
                         sublistId: 'item',
                         fieldId: 'custcol_pd_buyer_purchorder_initial',
                         line: i,
-                        value: idBuyer
+                        value: _chosenBuyer.id
+                    });
+
+                    /**
+                     * Analisar se essa lógica realmente esta funcional
+                     * Ao pegar dat/hora de um campo do netsuite não usar new Date() para converter o valor para data e hora para o calculo
+                     * usar format.parse
+                     * Verificar se new Date(_nowBase + _offset).toISOString() realmente esta funcionando e se sim qual a conversão esta trazendo e se o calculo esta correto
+                     */
+                    
+                    let _buyerInPool = _buyerPool.find(function (b) { return b.id === _chosenBuyer.id; });
+                    if (_buyerInPool) {
+                        let _rawDate = format.format({
+                            value: new Date(_nowBase + _offset),
+                            type: format.Type.DATETIMETZ
+                        });
+                        _buyerInPool.lastSOAssignment = format.parse({
+                            value: _rawDate,
+                            type: format.Type.DATETIMETZ
+                        }).toISOString();
+                        _buyerInPool.salesAssignedToday = (_buyerInPool.salesAssignedToday || 0) + 1;
+                        _offset += 1000;
+                    }
+
+                    _assignedBuyerIdsList.push(_chosenBuyer.id);
+
+                    log.debug({
+                        title: 'assignBuyerToLine - Line assigned',
+                        details: { line: i, buyerId: _chosenBuyer.id }
                     });
                 }
 
-                _salesOrderRec.save({
-                    enableSourcing: false,
-                    ignoreMandatoryFields: true
+                try {
+                    _salesOrderRec.save({
+                        enableSourcing: false,
+                        ignoreMandatoryFields: true
+                    });
+                } catch (saveError) {
+                    log.error({
+                        title: 'assignBuyerToLine - Save failed',
+                        details: {
+                            salesOrderId: idSalesOrder,
+                            error: saveError.message || saveError
+                        }
+                    });
+                    return;
+                }
+
+                // Incrementa compradores após save bem-sucedido
+                _assignedBuyerIdsList.forEach(function (buyerId) {
+                    incrementBuyerCounter(buyerId);
+                });
+
+                let _uniqueBuyerIds = _assignedBuyerIdsList.filter(function (id, idx, arr) {
+                    return arr.indexOf(id) === idx;
+                });
+
+                _uniqueBuyerIds.forEach(function (buyerId) {
+                    let _poolEntry = _buyerPool.find(function (b) { return b.id === buyerId; });
+                    let _timestamp = (_poolEntry && _poolEntry.lastSOAssignment) ? new Date(_poolEntry.lastSOAssignment) : new Date();
+                    updateEmployeeLastSOAssignment(buyerId, _timestamp);
                 });
 
                 log.debug({
-                    title: 'updateSOItemBuyerLines - Buyer configurado nas linhas',
-                    details: {
-                        salesOrderId: idSalesOrder,
-                        buyerId: idBuyer,
-                        linesUpdated: _lineCount
-                    }
+                    title: 'assignBuyerToLine - Complete',
+                    details: { salesOrderId: idSalesOrder, buyersAssigned: _uniqueBuyerIds }
                 });
 
             } catch (error) {
-
                 log.error({
-                    title: 'updateSOItemBuyerLines - Error processing',
+                    title: 'assignBuyerToLine - Error processing',
                     details: error
                 });
             }
         }
 
-        function updateEmployeeLastSOAssignment(employeeId) {
+        function updateEmployeeLastSOAssignment(employeeId, timestamp) {
             try {
                 if (!employeeId) {
                     return;
                 }
 
+                let _timestamp = (timestamp instanceof Date) ? timestamp : new Date();
+
                 record.submitFields({
                     type: record.Type.EMPLOYEE,
                     id: employeeId,
                     values: {
-                        custentity_pd_last_so_assignment: new Date()
+                        custentity_pd_last_so_assignment: _timestamp
                     },
                     options: {
                         enableSourcing: false,
@@ -678,7 +509,7 @@ define(
                     title: 'updateEmployeeLastSOAssignment - Timestamp atualizado',
                     details: {
                         employeeId: employeeId,
-                        lastAssignment: new Date()
+                        lastAssignment: _timestamp
                     }
                 });
 
@@ -693,48 +524,36 @@ define(
         function pickBuyerByOldestLastAssignment(buyers) {
             try {
 
-                if (!buyers || buyers.length === 0) {
-                    return null;
-                }
+                if (!buyers || buyers.length === 0) return null;
 
-                let _buyersSorted = buyers.slice().sort(function (a, b) {
-
-                    // Buyer sem data recebe prioridade
-                    if (!a.lastSOAssignment && !b.lastSOAssignment) {
-                        return 0;
-                    }
-
-                    if (!a.lastSOAssignment) {
-                        return -1;
-                    }
-
-                    if (!b.lastSOAssignment) {
-                        return 1;
-                    }
-
-                    let _timeA = new Date(a.lastSOAssignment).getTime();
-                    let _timeB = new Date(b.lastSOAssignment).getTime();
-
-                    return _timeA - _timeB;
+                // 1º critério: menor quantidade de SOs atribuídas
+                let _minCount = Number.MAX_SAFE_INTEGER;
+                buyers.forEach(function (b) {
+                    if (b.salesAssignedToday < _minCount) _minCount = b.salesAssignedToday;
                 });
 
-                // Identifica o menor timestamp
-                let _oldestTime = _buyersSorted[0].lastSOAssignment
-                    ? new Date(_buyersSorted[0].lastSOAssignment).getTime()
+                let _byCount = buyers.filter(function (b) {
+                    return b.salesAssignedToday === _minCount;
+                });
+
+                // 2º critério (desempate): timestamp mais antigo
+                let _byCountSorted = _byCount.slice().sort(function (a, b) {
+                    if (!a.lastSOAssignment && !b.lastSOAssignment) return 0;
+                    if (!a.lastSOAssignment) return -1;
+                    if (!b.lastSOAssignment) return 1;
+                    return new Date(a.lastSOAssignment).getTime() - new Date(b.lastSOAssignment).getTime();
+                });
+
+                let _oldestTime = _byCountSorted[0].lastSOAssignment
+                    ? new Date(_byCountSorted[0].lastSOAssignment).getTime()
                     : null;
 
-                // Buyers empatados
-                let _candidates = _buyersSorted.filter(function (buyer) {
-
-                    if (!_oldestTime && !buyer.lastSOAssignment) {
-                        return true;
-                    }
-
-                    return buyer.lastSOAssignment &&
-                        new Date(buyer.lastSOAssignment).getTime() === _oldestTime;
+                let _candidates = _byCountSorted.filter(function (b) {
+                    if (!_oldestTime && !b.lastSOAssignment) return true;
+                    return b.lastSOAssignment && new Date(b.lastSOAssignment).getTime() === _oldestTime;
                 });
 
-                // Sorteio em caso de empate
+                // 3º critério (ainda empatado): sorteio
                 let _idx = Math.floor(Math.random() * _candidates.length);
 
                 log.debug({
@@ -745,27 +564,327 @@ define(
                 return _candidates[_idx];
 
             } catch (error) {
-
                 log.error({
                     title: 'pickBuyerByOldestLastAssignment - Error processing',
                     details: error
                 });
-
                 return null;
+            }
+        }
+
+        function handleCreatePODecrement(oldRecord, newRecord) {
+            try {
+                if (!newRecord) return;
+
+                let _salesOrderId = newRecord.id;
+                let _lineCount = newRecord.getLineCount({ sublistId: 'item' });
+
+                if (!_lineCount || _lineCount === 0) return;
+
+                let _linesToProcess = [];
+
+                for (let i = 0; i < _lineCount; i++) {
+
+                    let _linkedPO = newRecord.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_aae_purchaseorder',
+                        line: i
+                    });
+
+                    if (!_linkedPO) continue;
+
+                    let _processed = newRecord.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_pow_po_processed',
+                        line: i
+                    });
+
+                    if (_processed === true || _processed === 'T') continue;
+
+                    let _buyerId = newRecord.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_buyer_purchorder_initial',
+                        line: i
+                    });
+
+                    if (!_buyerId) continue;
+
+                    _linesToProcess.push({ line: i, buyerId: _buyerId });
+                }
+
+                if (_linesToProcess.length === 0) return;
+
+                let _salesOrderRec = record.load({
+                    type: record.Type.SALES_ORDER,
+                    id: _salesOrderId,
+                    isDynamic: false
+                });
+
+                let _needsSave = false;
+
+                _linesToProcess.forEach(function (item) {
+                    decrementBuyerCounter(item.buyerId);
+
+                    _salesOrderRec.setSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_pow_po_processed',
+                        line: item.line,
+                        value: true
+                    });
+
+                    _needsSave = true;
+
+                    log.audit({
+                        title: 'handleCreatePODecrement - PO Processed',
+                        details: { line: item.line, buyerId: item.buyerId }
+                    });
+                });
+
+                if (_needsSave) {
+                    _salesOrderRec.save({
+                        enableSourcing: false,
+                        ignoreMandatoryFields: true
+                    });
+                }
+
+            } catch (error) {
+                log.error({
+                    title: 'handleCreatePODecrement - Error processing',
+                    details: error
+                });
+            }
+        }
+
+        function resetAllBuyerCounters() {
+            try {
+                let _employeeSearch = search.create({
+                    type: search.Type.EMPLOYEE,
+                    filters: [
+                        [EMPLOYEE_FIELDS.buyerFlag, 'is', 'T'],
+                        'AND',
+                        ['isinactive', 'is', 'F']
+                    ],
+                    columns: ['internalid']
+                });
+
+                let _resetCount = 0;
+
+                _employeeSearch.run().each(function (result) {
+                    let _id = result.getValue('internalid');
+
+                    record.submitFields({
+                        type: record.Type.EMPLOYEE,
+                        id: _id,
+                        values: {
+                            custentity_pd_pow_sales_assigned_today: 0
+                        },
+                        options: {
+                            enableSourcing: false,
+                            ignoreMandatoryFields: true
+                        }
+                    });
+
+                    _resetCount++;
+                    return true;
+                });
+
+                log.audit({
+                    title: 'resetAllBuyerCounters - Complete',
+                    details: { buyersReset: _resetCount }
+                });
+
+                return _resetCount;
+
+            } catch (error) {
+                log.error({
+                    title: 'resetAllBuyerCounters - Error processing',
+                    details: error
+                });
+                return 0;
+            }
+        }
+
+        function decrementBuyerCounter(employeeId) {
+            try {
+                if (!employeeId) return;
+
+                let _employeeLookup = search.lookupFields({
+                    type: search.Type.EMPLOYEE,
+                    id: employeeId,
+                    columns: [EMPLOYEE_FIELDS.salesAssignedToday]
+                });
+
+                let _currentCount = 0;
+
+                if (_employeeLookup && _employeeLookup[EMPLOYEE_FIELDS.salesAssignedToday] != null) {
+                    let _raw = _employeeLookup[EMPLOYEE_FIELDS.salesAssignedToday];
+                    if (Array.isArray(_raw)) _raw = _raw[0];
+                    _currentCount = parseInt(_raw, 10) || 0;
+                }
+
+                let _updatedCount = Math.max(0, _currentCount - 1);
+
+                record.submitFields({
+                    type: record.Type.EMPLOYEE,
+                    id: employeeId,
+                    values: {
+                        custentity_pd_pow_sales_assigned_today: _updatedCount
+                    },
+                    options: {
+                        enableSourcing: false,
+                        ignoreMandatoryFields: true
+                    }
+                });
+
+                log.debug({
+                    title: 'decrementBuyerCounter - Counter updated',
+                    details: {
+                        employeeId: employeeId,
+                        previousValue: _currentCount,
+                        updatedValue: _updatedCount
+                    }
+                });
+
+            } catch (error) {
+                log.error({
+                    title: 'decrementBuyerCounter - Error processing',
+                    details: error
+                });
+            }
+        }
+
+        function getNowMinutesInTimezone(timezoneId) {
+            try {
+                let _tz = timezoneId
+                    ? timezoneId
+                    : runtime.getCurrentUser().getPreference({ name: 'TIMEZONE' });
+
+                let _nowFormatted = format.format({
+                    value: new Date(),
+                    type: format.Type.DATETIME,
+                    timezone: _tz
+                });
+
+                let _parts = _nowFormatted.split(' ');
+                return parseTimeToMinutes(_parts[1] + ' ' + _parts[2]);
+
+            } catch (e) {
+                log.error('getNowMinutesInTimezone error', e);
+                let _now = new Date();
+                return _now.getHours() * 60 + _now.getMinutes();
+            }
+        }
+
+        function isBuyerBlockedByUrgencyLine(employeeId) {
+            try {
+                let _soSearch = search.create({
+                    type: search.Type.SALES_ORDER,
+                    filters: [
+                        ['custcol_pd_buyer_purchorder_initial', 'anyof', employeeId],
+                        'AND',
+                        ['custcol_aae_purchaseorder', 'anyof', '@NONE@'],
+                        'AND',
+                        ['custcol_pd_cso_dont_create_purchreq', 'is', 'F'],
+                        'AND',
+                        ['custbody_aae_urgency_order', 'anyof', '2'],
+                        'AND',
+                        ['mainline', 'is', 'F']
+                    ],
+                    columns: ['internalid']
+                });
+
+                let _paged = _soSearch.runPaged({ pageSize: 1 });
+                let _blocked = (_paged.count > 0);
+
+                log.debug('isBuyerBlockedByUrgencyLine', {
+                    employeeId: employeeId,
+                    blocked: _blocked
+                });
+
+                return _blocked;
+
+            } catch (error) {
+                log.error('isBuyerBlockedByUrgencyLine - error', error);
+                return false;
+            }
+        }
+
+        function applyUrgencyRules(buyers) {
+            try {
+                let _filtered = [];
+                let _blockedCount = 0;
+
+                for (let i = 0; i < buyers.length; i++) {
+                    let _buyer = buyers[i];
+                    let _blocked = isBuyerBlockedByUrgencyLine(_buyer.id);
+
+                    log.debug('applyUrgencyRules', {
+                        buyerId: _buyer.id,
+                        blocked: _blocked
+                    });
+
+                    if (_blocked) {
+                        _blockedCount++;
+                    } else {
+                        _filtered.push(_buyer);
+                    }
+                }
+
+                if (_blockedCount === buyers.length) {
+                    log.debug('applyUrgencyRules - todos bloqueados, usando lista completa', {
+                        totalBuyers: buyers.length
+                    });
+                    return buyers;
+                }
+
+                return _filtered;
+
+            } catch (error) {
+                log.error('applyUrgencyRules - error', error);
+                return buyers || [];
+            }
+        }
+
+        function getTimezoneOlsonMap() {
+            try {
+                let _results = query.runSuiteQL({
+                    query: 'SELECT uniquekey, id FROM timezone'
+                }).asMappedResults();
+
+                let _map = {};
+
+                _results.forEach(function (row) {
+                    _map[row.uniquekey] = row.id;
+                });
+
+                log.debug({
+                    title: 'getTimezoneOlsonMap - Mapa montado',
+                    details: { total: _results.length }
+                });
+
+                return _map;
+
+            } catch (error) {
+                log.error({
+                    title: 'getTimezoneOlsonMap - Error processing',
+                    details: error
+                });
+                return {};
             }
         }
 
         return {
             readData: readData,
             assignBuyerToSO: assignBuyerToSO,
+            assignBuyerToLine: assignBuyerToLine,
             getEligibleBuyers: getEligibleBuyers,
-            applyUrgencyRules: applyUrgencyRules,
             pickBuyerByLeastLoad: pickBuyerByLeastLoad,
             incrementBuyerCounter: incrementBuyerCounter,
-            updateSOBuyer: updateSOBuyer,
-            updateSOItemBuyerLines: updateSOItemBuyerLines,
             updateEmployeeLastSOAssignment: updateEmployeeLastSOAssignment,
-            pickBuyerByOldestLastAssignment: pickBuyerByOldestLastAssignment
+            pickBuyerByOldestLastAssignment: pickBuyerByOldestLastAssignment,
+            handleCreatePODecrement: handleCreatePODecrement,
+            decrementBuyerCounter: decrementBuyerCounter,
+            resetAllBuyerCounters: resetAllBuyerCounters
         };
     }
 );

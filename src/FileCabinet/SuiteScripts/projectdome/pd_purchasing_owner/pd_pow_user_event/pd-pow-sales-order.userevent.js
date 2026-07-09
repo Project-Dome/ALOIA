@@ -32,22 +32,12 @@ define([
 
             const newRecord = context.newRecord;
             const salesOrderId = newRecord.id;
-            const buyer = newRecord.getValue({ fieldId: 'custbody_aae_buyer' });
-
-            if (buyer) {
-                log.debug({
-                    title: 'Buyer encontrado',
-                    details: buyer
-                });
-                return;
-            }
-
-            log.debug({
-                title: 'Buyer vazio',
-                details: 'O campo custbody_aae_buyer não possui valor.'
-            });
 
             sales_order_service.assignBuyerToSO(salesOrderId);
+
+            if (type === UE.EDIT) {
+                sales_order_service.handleCreatePODecrement(context.oldRecord, context.newRecord);
+            }
 
         } catch (error) {
             log.error({
@@ -60,5 +50,5 @@ define([
     return {
         afterSubmit: afterSubmit
     };
-    
+
 });

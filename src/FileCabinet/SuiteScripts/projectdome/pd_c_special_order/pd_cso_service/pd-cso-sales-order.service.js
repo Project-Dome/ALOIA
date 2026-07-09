@@ -12,7 +12,8 @@ define([
     'N/runtime',
     'N/search',
 
-    './pd-cso-purchase-order.service',
+    '../pd_cso_service/pd-cso-purchase-order.service',
+    '../../pd_purchasing_owner/pd_pow_service/pd-pow-sales-order.service',
 
     '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-search.util.js',
     '../../pd_c_netsuite_tools/pd_cnt_standard/pd-cnts-record.util.js',
@@ -27,6 +28,7 @@ define([
     search,
 
     purchase_order_service,
+    sales_order_pow_service,
 
     search_util,
     record_util
@@ -1134,6 +1136,31 @@ define([
                             fieldId: 'custcol_pd_final_cost_po_un',
                             line: i,
                             value: parseFloat(_payloadLine.finalCostPoUn)
+                        });
+                    }
+
+                    const _alreadyProcessed = _salesOrderRecord.getSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_pd_pow_po_processed',
+                        line: i
+                    });
+
+                    if (_alreadyProcessed !== true && _alreadyProcessed !== 'T') {
+                        const _initialBuyerId = _salesOrderRecord.getSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_pd_buyer_purchorder_initial',
+                            line: i
+                        });
+
+                        if (_initialBuyerId) {
+                            sales_order_pow_service.decrementBuyerCounter(_initialBuyerId);
+                        }
+
+                        _salesOrderRecord.setSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_pd_pow_po_processed',
+                            line: i,
+                            value: true
                         });
                     }
 
