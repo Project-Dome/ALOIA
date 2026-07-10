@@ -13,7 +13,8 @@ define([
     '../pd_tno_service/pd-tno-track-notification-update.service.js',
     '../pd_tno_service/pd-tno-extract-track-historical.service.js',
     '../pd_tno_service/pd-tno-register-tracking-number.service.js',
-    '../pd_tno_service/pd-tno-gettrackinfo.service.js'
+    '../pd_tno_service/pd-tno-gettrackinfo.service.js',
+    '../pd_tno_service/pd-tno-extract-picked-up-date.service.js'
 
 ], function (
     log,
@@ -24,7 +25,8 @@ define([
     updateService,
     historicalService,
     registerTrackingService,
-    getTrackInfoService
+    getTrackInfoService,
+    pickedUpDateService
 ) {
 
     const API_URL = 'https://api.17track.net/track/v2.4/register';
@@ -143,12 +145,16 @@ define([
             // HISTÓRICO
             const milestones = trackInfo.milestone || [];
             const historical = historicalService.extractTrackHistorical(milestones);
+            const pickedUpDate = pickedUpDateService.getPickedUpDate(milestones);
 
             // BUILD PAYLOAD
             const payloadUpdate = payloadService.buildPayload({
                 status: trackInfo.latest_status?.status || '',
                 deliveryTo: trackInfo.time_metrics?.estimated_delivery_date?.to || null,
-                historicalData: historical
+                historicalData: historical,
+                serviceType: trackInfo.misc_info?.service_type || null,
+                providerServiceType: trackInfo.tracking?.providers?.[0]?.service_type || null,
+                pickedUpDate: pickedUpDate
             });
 
             // payloadUpdate.custrecord_pd_tno_origin_transaction = inboundId;

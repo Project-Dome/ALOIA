@@ -28,7 +28,8 @@ define([
     '../pd_tno_service/pd-tno-get-carrier-id-from-map.service',
     '../pd_tno_service/pd-tno-extract-track-historical.service.js',
     '../pd_tno_service/pd-tno-build-track-notification-payload.service.js',
-    '../pd_tno_service/pd-tno-track-notification-active-check.service.js'
+    '../pd_tno_service/pd-tno-track-notification-active-check.service.js',
+    '../pd_tno_service/pd-tno-extract-picked-up-date.service.js'
 
 ],
     function (
@@ -52,7 +53,8 @@ define([
         get_carrier_id_service,
         historical_service,
         notification_payload_service,
-        notification_active_check_service
+        notification_active_check_service,
+        pickedUpDateService
 
     ) {
 
@@ -159,12 +161,16 @@ define([
 
                         var milestones = accepted[0].track_info.milestone || [];
                         var historicalData = historical_service.extractTrackHistorical(milestones);
+                        var pickedUpDate = pickedUpDateService.getPickedUpDate(milestones);
 
                         // Construção do payload para atualização do custom record
                         var payloadUpdate = notification_payload_service.buildPayload({
                             status: accepted[0].track_info.latest_status?.status || '',
                             deliveryTo: accepted[0].track_info.time_metrics?.estimated_delivery_date?.to || null,
-                            historicalData: historicalData
+                            historicalData: historicalData,
+                            serviceType: accepted[0].track_info.misc_info?.service_type || null,
+                            providerServiceType: accepted[0].track_info.tracking?.providers?.[0]?.service_type || null,
+                            pickedUpDate: pickedUpDate
                         });
 
                         log.debug('Payload para atualização do registro customrecord_pd_tno_track_notification', {

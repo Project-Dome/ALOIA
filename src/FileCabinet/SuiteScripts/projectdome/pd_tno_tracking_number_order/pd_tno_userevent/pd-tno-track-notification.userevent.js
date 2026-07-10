@@ -13,7 +13,8 @@ define([
     '../pd_tno_service/pd-tno-gettrackinfo.service.js',
     '../pd_tno_service/pd-tno-extract-track-historical.service.js',
     '../pd_tno_service/pd-tno-build-track-notification-payload.service.js',
-    '../pd_tno_service/pd-tno-track-notification-update.service.js'
+    '../pd_tno_service/pd-tno-track-notification-update.service.js',
+    '../pd_tno_service/pd-tno-extract-picked-up-date.service.js'
 
 ], function (
     log,
@@ -23,7 +24,8 @@ define([
     getTrackInfoService,
     historicalService,
     payloadService,
-    updateService
+    updateService,
+    pickedUpDateService
 ) {
 
     function afterSubmit(context) {
@@ -217,6 +219,7 @@ define([
             // 6) Histórico
             var milestones = trackInfo.milestone || [];
             var historicalData = historicalService.extractTrackHistorical(milestones);
+            var pickedUpDate = pickedUpDateService.getPickedUpDate(milestones);
 
             // 7) Montar payload de atualização
             var payloadUpdate = payloadService.buildPayload({
@@ -228,7 +231,10 @@ define([
                     trackInfo.time_metrics.estimated_delivery_date.to
                     ? trackInfo.time_metrics.estimated_delivery_date.to
                     : null,
-                historicalData: historicalData
+                historicalData: historicalData,
+                serviceType: trackInfo.misc_info && trackInfo.misc_info.service_type,
+                providerServiceType: trackInfo.tracking && trackInfo.tracking.providers && trackInfo.tracking.providers[0] && trackInfo.tracking.providers[0].service_type,
+                pickedUpDate: pickedUpDate
             });
 
             log.debug('UE Track Notification - payloadUpdate', payloadUpdate);
