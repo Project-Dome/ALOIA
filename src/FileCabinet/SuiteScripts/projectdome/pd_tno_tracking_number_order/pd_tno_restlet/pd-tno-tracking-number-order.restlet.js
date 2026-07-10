@@ -55,7 +55,10 @@ define(
                     status: parsed.status,
                     statusDate: parsed.statusDate,
                     deliveryTo: parsed.estimatedDeliveryDate,
-                    historicalData: parsed.historical
+                    historicalData: parsed.historical,
+                    serviceType: parsed.serviceType,
+                    providerServiceType: parsed.providerServiceType,
+                    pickedUpDate: parsed.pickedUpDate
                 });
 
                 // REGRA: se a 17Track vier sem estimated_delivery_date, NÃO atualizar o campo no custom record

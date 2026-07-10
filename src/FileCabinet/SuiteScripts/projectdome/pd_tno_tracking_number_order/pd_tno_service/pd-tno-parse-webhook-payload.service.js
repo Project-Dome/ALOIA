@@ -7,16 +7,18 @@
 define(
     [
         'N/log',
-        './pd-tno-extract-track-historical.service'
+        './pd-tno-extract-track-historical.service',
+        './pd-tno-extract-picked-up-date.service'
     ],
     function (
-        log, 
-        extract_track_historical_service
+        log,
+        extract_track_historical_service,
+        extract_picked_up_date_service
     ) {
 
         function parseWebhookPayload(payload) {
-      
-            
+
+
            var logTitle = 'parseWebhookPayload';
 
             log.debug(logTitle, 'Raw Payload Received: ' + JSON.stringify(payload));
@@ -41,6 +43,10 @@ define(
             // 🔹 Gera STRING no mesmo padrão do User Event
             var historicalText = extract_track_historical_service.extractTrackHistorical(milestones) || '';
 
+            var pickedUpDate = extract_picked_up_date_service.getPickedUpDate(milestones);
+            var serviceType = (trackInfo.misc_info && trackInfo.misc_info.service_type) || null;
+            var providerServiceType = (trackInfo.tracking && trackInfo.tracking.providers && trackInfo.tracking.providers[0] && trackInfo.tracking.providers[0].service_type) || null;
+
             log.debug(logTitle, 'Historical generated (string): ' + historicalText);
 
             return {
@@ -49,7 +55,10 @@ define(
                 status: latestStatus.status || null,
                 statusDate: latestEvent.time_utc || null,
                 estimatedDeliveryDate: estimatedDelivery,
-                historical: historicalText 
+                historical: historicalText,
+                serviceType: serviceType,
+                providerServiceType: providerServiceType,
+                pickedUpDate: pickedUpDate
             };
         }
 

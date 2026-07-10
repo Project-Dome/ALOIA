@@ -23,6 +23,12 @@ define([], function () {
         var status = params && params.status ? params.status : '';
         var deliveryTo = params && params.deliveryTo ? params.deliveryTo : null;
 
+        var serviceType = params && params.serviceType ? params.serviceType : null;
+        var providerServiceType = params && params.providerServiceType ? params.providerServiceType : null;
+        var pickedUpDate = params && params.pickedUpDate ? params.pickedUpDate : null;
+
+        var resolvedServiceType = serviceType || providerServiceType || null;
+
         // STATUS DATE (data da atualização)
 
         var statusDate = new Date();
@@ -71,6 +77,14 @@ define([], function () {
 
         if (estimatedDateObj) {
             payload.custrecord_pd_tno_estimated_delivery_dat = estimatedDateObj;
+        }
+
+        if (resolvedServiceType) {
+            payload.custrecord_pd_tno_service = resolvedServiceType;
+        }
+
+        if (pickedUpDate) {
+            payload.custrecord_pd_tno_picked_up = pickedUpDate;
         }
 
         return payload;
