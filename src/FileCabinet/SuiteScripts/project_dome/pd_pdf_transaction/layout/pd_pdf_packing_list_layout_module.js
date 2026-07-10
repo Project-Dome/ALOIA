@@ -2,8 +2,8 @@
  * @NApiVersion 2.1
  */
 define([
-    "N/runtime"
-],
+        "N/runtime"
+    ],
 
     (runtime) => {
 
@@ -681,6 +681,11 @@ define([
         function escapeXml(str) {
             if (!str && str != "0") return '';
             return String(str)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
@@ -691,6 +696,11 @@ define([
         function formatUrlForXml(url) {
             if (!url) return '';
             return String(url)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&apos;')
@@ -702,16 +712,16 @@ define([
             if (!isoDate) return '';
             const date = new Date(isoDate);
             const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const day   = String(date.getUTCDate()).padStart(2, '0');
-            const year  = date.getUTCFullYear();
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const year = date.getUTCFullYear();
             return month + '/' + day + '/' + year;
         }
 
         function formatTimeAMPM(timeStr) {
             if (!timeStr) return '';
             const parts = timeStr.split(':');
-            let hours   = parseInt(parts[0], 10);
-            const mins  = parts[1] || '00';
+            let hours = parseInt(parts[0], 10);
+            const mins = parts[1] || '00';
             const period = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12 || 12;
             return hours + ':' + mins + ' ' + period;
@@ -719,7 +729,7 @@ define([
 
         function formatCurrency(value) {
             if (!value && value !== 0) return '0.00';
-            return Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         function createDynamicHtml(parameters, index) {
@@ -785,22 +795,32 @@ define([
         function formatAddress(str) {
             if (!str) return '';
             return String(str)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&apos;')
-                .replace(/\n/g, '<br/>');
+                .replace(/\n/g, '<br/>')
         }
 
         function formatBoxDimensions(str) {
             if (!str) return '<tr><td style="width:15%;" class="dimensions-cell dimensions-label">Box Dimensions:</td><td class="dimensions-cell"></td></tr>';
-    const boxes = str.split(';').map(function(s){ return s.trim(); }).filter(function(s){ return s; });
-    return boxes.map(function(s, i){
+            const boxes = str.split(';').map(function (s) { return s.trim(); }).filter(function (s) { return s; });
+            return boxes.map(function (s, i) {
                 const labelCell = i === 0
                     ? '<td style="width:15%; vertical-align:top;" class="dimensions-cell dimensions-label">Box Dimensions:</td>'
                     : '<td style="width:15%;" class="dimensions-cell"></td>';
                 const valueCell = '<td style="width:85%; vertical-align:top;" class="dimensions-cell">' + String(s)
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&apos;/g, "'")
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')

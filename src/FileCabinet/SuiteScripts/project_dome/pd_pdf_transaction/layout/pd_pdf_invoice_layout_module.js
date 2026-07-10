@@ -683,6 +683,11 @@ define([
         function escapeXml(str) {
             if (!str && str != "0") return '';
             return String(str)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
@@ -693,6 +698,11 @@ define([
         function formatUrlForXml(url) {
             if (!url) return '';
             return String(url)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&apos;')
@@ -787,12 +797,17 @@ define([
         function formatAddress(str) {
             if (!str) return '';
             return String(str)
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&apos;/g, "'")
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&apos;')
-                .replace(/\n/g, '<br/>');
+                .replace(/\n/g, '<br/>')
         }
 
         function formatBoxDimensions(str) {
@@ -803,6 +818,11 @@ define([
                     ? '<td style="width:15%; vertical-align:top;" class="dimensions-cell dimensions-label">Box Dimensions:</td>'
                     : '<td style="width:15%;" class="dimensions-cell"></td>';
                 const valueCell = '<td style="width:85%; vertical-align:top;" class="dimensions-cell">' + String(s)
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&apos;/g, "'")
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')
