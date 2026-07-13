@@ -213,7 +213,7 @@ define([
                         line: index
                     });
 
-                    itemLine["unitPrice"] = newRecord.getSublistValue({
+                    let unitPrice = newRecord.getSublistValue({
                         sublistId: "item",
                         fieldId: "custcol_pd_unit_price_sales",
                         line: index
@@ -223,17 +223,19 @@ define([
                         line: index
                     });
 
+                    itemLine["unitPrice"] = unitPrice;
+
                     itemLine["UOM"] = newRecord.getSublistText({
                         sublistId: "item",
                         fieldId: "custcol_aae_sales_units",
                         line: index
                     });
 
-                    itemLine["totalAmount"] = newRecord.getSublistValue({
-                        sublistId: "item",
-                        fieldId: "amount",
-                        line: index
-                    });
+                    // itemLine["totalAmount"] = newRecord.getSublistValue({
+                    //     sublistId: "item",
+                    //     fieldId: "amount",
+                    //     line: index
+                    // });
 
                     let partNumberCustomer = newRecord.getSublistValue({
                         sublistId: "item",
@@ -347,6 +349,7 @@ define([
                     if (inventoryData) {
                         inventoryData.forEach(lot => {
                             itemLine["quantity"] = Number(lot.quantity) * conversionFactor;
+                            itemLine["totalAmount"] = Number(lot.quantity) * Number(unitPrice);
                             lot = formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate)
                             itemLine["inventoryNumber"] = lot;
                             PDFParameters["invoiceItems"].push({...itemLine});
@@ -356,11 +359,6 @@ define([
                     }
 
                 }
-
-                log.debug({
-                    title: "invoiceItems",
-                    details: PDFParameters["invoiceItems"]
-                })
 
                 PDFParameters["boxDimensions"] = newRecord.getValue({
                     fieldId: "custbody_pd_box_dimensions"
