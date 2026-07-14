@@ -32,7 +32,7 @@ define([],
                                         <barcode
                                             codetype="code128"
                                             showtext="false"
-                                            value="${escapeXml(result.pn)}"
+                                            value="${escapeXml(`${result.notes_invoice}_${result.pn}`)}"
                                             height="15pt"
                                             width="160pt"
                                         />
