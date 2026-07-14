@@ -11,13 +11,16 @@ define([
 
         handler.getXml = (parameters) => {
 
-            let html = "";
-
             const arrayLength = parameters.invoiceItems.length;
 
+            let itemRows = "";
             parameters.invoiceItems.forEach((result, index) => {
-                html += getPDFBody(parameters, index, arrayLength);
+                itemRows += getItemRow(parameters, index);
             });
+
+            const html = getTopBlock(parameters, arrayLength)
+                + itemRows
+                + getBottomBlock(parameters);
 
             return (`<?xml version="1.0" encoding="UTF-8"?>
             <!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
@@ -201,14 +204,20 @@ define([
                             text-align: right;
                         }
                         
+                        .item-table > thead > tr > th,
                         .item-table > tbody > tr > th,
                         .item-table > tbody > tr > td {
                             border-right: 0.5pt solid black;
                         }
                         
+                        .item-table > thead > tr > th:last-child,
                         .item-table > tbody > tr > th:last-child,
                         .item-table > tbody > tr > td:last-child {
                             border-right: none;
+                        }
+                        
+                        .item-table > tbody > tr > td {
+                            border-bottom: 0.5pt solid black;
                         }
                         
                         /* ===== DESCRIPTION BLOCK ===== */
@@ -361,14 +370,9 @@ define([
 
         }
 
-        function getPDFBody(parameters, index, arrayLength) {
+        function getTopBlock(parameters, arrayLength) {
 
-            const termsCondition = runtime.getCurrentScript().getParameter({name: "custscript_pd_invoice_terms_condition_ds"});
-
-            const itemArrayObject = parameters.invoiceItems[index];
-
-            let html = (`<div style="page-break-after: always;">
-                    
+            let html = (`
                         <!-- HEADER -->
                         <table>
                             <tr>
@@ -523,6 +527,7 @@ define([
                         
                         <!-- Itens -->                    
                         <table class="item-table">
+                            <thead>
                             <tr>
                                 <th width="5%">Item</th>
                                 <th width="46%">Part Number / Description</th>
@@ -533,7 +538,17 @@ define([
                                 <th width="6%" class="item-col-center">UOM</th>
                                 <th width="10%" class="item-col-right">Total Amt</th>
                             </tr>
-                        
+                            </thead>
+                            <tbody>`);
+
+            return html;
+        }
+
+        function getItemRow(parameters, index) {
+
+            const itemArrayObject = parameters.invoiceItems[index];
+
+            return (`
                             <tr>
                                 <td>${escapeXml(index + 1)}</td>
                         
@@ -552,10 +567,19 @@ define([
                                 <td class="item-col-right">${escapeXml("$" + formatCurrency(itemArrayObject.unitPrice))}</td>
                                 <td class="item-col-center">${escapeXml(itemArrayObject.UOM)}</td>
                                 <td class="item-col-right">${escapeXml("$" + formatCurrency(itemArrayObject.totalAmount))}</td>
-                            </tr>
+                            </tr>`);
+        }
+
+        function getBottomBlock(parameters) {
+
+            const termsCondition = runtime.getCurrentScript().getParameter({name: "custscript_pd_invoice_terms_condition_ds"});
+
+            let html = (`
+                            </tbody>
                         </table>
-                        
-                        <!-- BLOCO FINAL -->
+
+                        <!-- BLOCO FINAL: sempre junto, nunca quebra entre páginas -->
+                        <div style="page-break-inside: avoid;">
                         <table class="bottom-wrap">
                           <tr>
                         
@@ -675,7 +699,7 @@ define([
                           </tr>
                         </table>
                            
-                    </div>`);
+                        </div>`);
 
             return html;
         }
