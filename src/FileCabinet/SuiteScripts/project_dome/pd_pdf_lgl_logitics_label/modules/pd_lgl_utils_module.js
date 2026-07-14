@@ -11,82 +11,85 @@ define([
 
         handler.getXmlParameters = (invoiceId) => {
 
-    log.debug({
-        title: "INVOICE ID",
-        details: invoiceId
-    });
+            log.debug({
+                title: "INVOICE ID",
+                details: invoiceId
+            });
 
-    return query.runSuiteQL({
-        query: (`SELECT pn_number.NAME                                AS pn,
-                        invl.memo                                     AS description,
-                        invn.inventorynumber                          AS sn,
-                        CASE WHEN i.isserialitem = 'T' THEN 'T' ELSE 'F' END AS is_serie,
-                        ia.quantity                                   AS qty,
-                        mfg.companyname                               AS manufacturer,
-                        po.tranid                                     AS po_number,
-                        To_char(t.trandate, 'MM/DD/YYYY')             AS rec_date,
-                        To_char(invn.expirationdate, 'MM/DD/YYYY')    AS exp_date,
-                        item_status.NAME                              AS cond,
-                        sales_uom.unitname                                  AS uom,
-                        loc.NAME                                      AS location,
-                        t.custbody_wr                                 AS receiver,
-                        inv.custbody_pd_lastcerifiedagency            AS tagged_by,
-                        inv.custbody_pd_remarks                       AS remark,
-                        customer.companyname                          AS notes_customer,
-                        so.otherrefnum                                AS notes_po,
-                        inv.tranid                                    AS notes_invoice
-                 FROM   TRANSACTION inv
-                            INNER JOIN transactionline invl
-                                       ON invl.TRANSACTION = inv.id
-                                           AND invl.mainline = 'F'
-                            INNER JOIN previoustransactionlink ptl_so
-                                       ON ptl_so.nextdoc = inv.id
-                            INNER JOIN TRANSACTION so
-                                       ON so.id = ptl_so.previousdoc
-                                           AND so.type = 'SalesOrd'
-                            INNER JOIN TRANSACTION t
-                                       ON t.type = 'ItemRcpt'
-                                           AND t.custbody_related_so = so.id
-                            INNER JOIN transactionline tl
-                                       ON tl.TRANSACTION = t.id
-                                           AND tl.item = invl.item
-                                           AND tl.mainline = 'F'
-                            LEFT JOIN item i
-                                      ON i.id = tl.item
-                            LEFT JOIN inventoryassignment ia
-                                      ON ia.TRANSACTION = t.id
-                                          AND ia.transactionline = tl.id
-                            LEFT JOIN inventorynumber invn
-                                      ON invn.id = ia.inventorynumber
-                            LEFT JOIN previoustransactionlink ptl
-                                      ON ptl.nextdoc = t.id
-                            LEFT JOIN TRANSACTION po
-                                      ON po.id = ptl.previousdoc
-                                          AND po.type = 'PurchOrd'
-                            LEFT JOIN transactionline pol
-                                      ON pol.TRANSACTION = po.id
-                                          AND pol.item = tl.item
-                                          AND pol.mainline = 'F'
-                            LEFT JOIN customrecord_aae_part_number_spec_vend pn_number
-                                      ON pn_number.id = pol.custcol_pd_partnumbervendor
-                            LEFT JOIN customlist_pd_aae_status_item item_status
-                                      ON item_status.id = tl.custcol_pd_aae_status_item
-                            LEFT JOIN unitstypeuom uom
-                                      ON uom.internalid = tl.units
-                            LEFT JOIN location loc
-                                      ON loc.id = tl.location
-                            LEFT JOIN customer
-                                      ON customer.id = so.entity
-                            LEFT JOIN vendor mfg
-                                      ON mfg.id = invl.custcol_aae_manufacturer
-                            LEFT JOIN unitstypeuom sales_uom
-                                      ON sales_uom.internalid = invl.custcol_aae_sales_units
-                 WHERE  inv.id = ?
-                 ORDER  BY t.trandate DESC,
-                           tl.linesequencenumber,
-                           ia.id`),
-        params: [invoiceId]
-    }).asMappedResults();
+            return query.runSuiteQL({
+                query: (`SELECT pn_number.NAME                                AS pn,
+                                invl.memo                                     AS description,
+                                invn.inventorynumber                          AS sn,
+                                CASE WHEN i.isserialitem = 'T' THEN 'T' ELSE 'F' END AS is_serie,
+                                ia.quantity                                   AS qty,
+                                mfg.companyname                               AS manufacturer,
+                                po.tranid                                     AS po_number,
+                                To_char(t.trandate, 'MM/DD/YYYY')             AS rec_date,
+                                To_char(invn.expirationdate, 'MM/DD/YYYY')    AS exp_date,
+                                item_status.NAME                              AS cond,
+                                sales_uom.unitname                                  AS uom,
+                                loc.NAME                                      AS location,
+                                t.custbody_wr                                 AS receiver,
+                                inv.custbody_pd_lastcerifiedagency            AS tagged_by,
+                                inv.custbody_pd_remarks                       AS remark,
+                                customer.companyname                          AS notes_customer,
+                                so.otherrefnum                                AS notes_po,
+                                inv.tranid                                    AS notes_invoice
+                         FROM   TRANSACTION inv
+                                    INNER JOIN transactionline invl
+                                               ON invl.TRANSACTION = inv.id
+                                                   AND invl.mainline = 'F'
+                                    INNER JOIN previoustransactionlinelink ptl_so
+                                               ON ptl_so.nextdoc = inv.id
+                                                   AND ptl_so.nextline = invl.id
+                                                   AND ptl_so.linktype = 'OrdBill'
+                                    INNER JOIN TRANSACTION so
+                                               ON so.id = ptl_so.previousdoc
+                                                   AND so.type = 'SalesOrd'
+                                    INNER JOIN TRANSACTION t
+                                               ON t.type = 'ItemRcpt'
+                                                   AND t.custbody_related_so = so.id
+                                    INNER JOIN transactionline tl
+                                               ON tl.TRANSACTION = t.id
+                                                   AND tl.item = invl.item
+                                                   AND tl.mainline = 'F'
+                                    LEFT JOIN item i
+                                              ON i.id = tl.item
+                                    LEFT JOIN inventoryassignment ia
+                                              ON ia.TRANSACTION = t.id
+                                                  AND ia.transactionline = tl.id
+                                    LEFT JOIN inventorynumber invn
+                                              ON invn.id = ia.inventorynumber
+                                    LEFT JOIN previoustransactionlinelink ptl
+                                              ON ptl.nextdoc = t.id
+                                                  AND ptl.nextline = tl.id
+                                    LEFT JOIN TRANSACTION po
+                                              ON po.id = ptl.previousdoc
+                                                  AND po.type = 'PurchOrd'
+                                    LEFT JOIN transactionline pol
+                                              ON pol.id = ptl.previousline
+                                                  AND pol.TRANSACTION = po.id
+                                                  AND pol.mainline = 'F'
+                                    LEFT JOIN customrecord_aae_part_number_spec_vend pn_number
+                                              ON pn_number.id = pol.custcol_pd_partnumbervendor
+                                    LEFT JOIN customlist_pd_aae_status_item item_status
+                                              ON item_status.id = tl.custcol_pd_aae_status_item
+                                    LEFT JOIN unitstypeuom uom
+                                              ON uom.internalid = tl.units
+                                    LEFT JOIN location loc
+                                              ON loc.id = tl.location
+                                    LEFT JOIN customer
+                                              ON customer.id = so.entity
+                                    LEFT JOIN vendor mfg
+                                              ON mfg.id = invl.custcol_aae_manufacturer
+                                    LEFT JOIN unitstypeuom sales_uom
+                                              ON sales_uom.internalid = invl.custcol_aae_sales_units
+                         WHERE  inv.id = ?
+                         ORDER  BY t.trandate DESC,
+                                   tl.linesequencenumber,
+                                   ia.id`),
+                params: [invoiceId]
+            }).asMappedResults();
 
         }
 
