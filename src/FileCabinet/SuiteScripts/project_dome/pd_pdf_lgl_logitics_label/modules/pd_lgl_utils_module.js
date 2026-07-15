@@ -53,6 +53,7 @@ define([
                                                ON tl.TRANSACTION = t.id
                                                    AND tl.item = invl.item
                                                    AND tl.mainline = 'F'
+                                                   AND tl.quantity IS NOT NULL
                                     LEFT JOIN item i
                                               ON i.id = tl.item
                                     LEFT JOIN inventoryassignment ia
