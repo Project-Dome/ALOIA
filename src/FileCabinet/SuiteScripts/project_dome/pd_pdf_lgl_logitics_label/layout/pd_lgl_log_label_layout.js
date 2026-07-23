@@ -18,6 +18,12 @@ define([],
 
             parameters.forEach((result, index) => {
 
+                const barcodeValue = sanitizeBarcodeValue(
+                    result.notes_invoice && result.pn
+                        ? `${result.notes_invoice}_${result.pn}`
+                        : (result.notes_invoice || result.pn || '0')
+                );
+
                 html += `<div style="
                             width:300pt;
                             height:300pt;
@@ -32,7 +38,7 @@ define([],
                                         <barcode
                                             codetype="code128"
                                             showtext="false"
-                                            value="${escapeXml(result.notes_invoice && result.pn ? `${result.notes_invoice}_${result.pn}` : (result.notes_invoice || result.pn || ''))}"
+                                            value="${barcodeValue}"
                                             height="15pt"
                                             width="160pt"
                                         />
@@ -207,15 +213,24 @@ define([],
         }
 
         function escapeXml(str) {
-           if (!str && str != "0") return '';
-           return String(str)
-        .toUpperCase()          // uppercase ANTES de escapar
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
-}
+            if (!str && str != "0") return '';
+            return String(str)
+                .toUpperCase()          // uppercase ANTES de escapar
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        }
+
+        function sanitizeBarcodeValue(str) {
+            if (!str) return '';
+            return String(str)
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toUpperCase()
+                .replace(/[^A-Z0-9\-_\/\. ]/g, '');
+        }
 
         return handler;
 
