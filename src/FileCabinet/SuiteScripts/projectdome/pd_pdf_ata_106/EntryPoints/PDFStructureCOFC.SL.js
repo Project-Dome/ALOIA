@@ -173,38 +173,67 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
 
                 try {
 
-                    var invDet = invoice.getSublistSubrecord({sublistId: 'item', fieldId: 'inventorydetail', line: i});
+                    const inventoryDetailField = invoice.getSublistField({
+                        sublistId: "item",
+                        fieldId: "inventorydetail",
+                        line: i
+                    });
 
-                    if (invDet) {
+                    if (inventoryDetailField) {
+
+                        var invDet = invoice.getSublistSubrecord({
+                            sublistId: 'item',
+                            fieldId: 'inventorydetail',
+                            line: i
+                        });
 
                         var assCount = invDet.getLineCount({sublistId: 'inventoryassignment'}) || 0;
 
-                        for (var a = 0; a < assCount; a++) {
+                        if(assCount === 0) {
 
-                            var serialNum = invDet.getSublistText({
-                                sublistId: 'inventoryassignment',
-                                fieldId: 'issueinventorynumber',
-                                line: a
-                            }) || '';
-
-                            var lotQuantity = Number(invDet.getSublistValue({
-                                sublistId: 'inventoryassignment',
-                                fieldId: 'quantity',
-                                line: a
-                            }));
-
-                            if (serialNum) rows.push({
+                            rows.push({
                                 partNumber: partNumber,
                                 vendorPartNumber: vendorPartNumber,
                                 description: description,
-                                quantity: lotQuantity * conversionFactor,
+                                quantity: quantity * conversionFactor,
                                 statusText: statusTxt,
                                 statusVal: statusVal,
                                 manufacturerName: manufacturerName,
-                                serialText: serialNum,
+                                serialText: "",
                                 lotText: "",
                                 poNumber: poNumber
                             });
+
+                        } else {
+
+                            for (var a = 0; a < assCount; a++) {
+
+                                var serialNum = invDet.getSublistText({
+                                    sublistId: 'inventoryassignment',
+                                    fieldId: 'issueinventorynumber',
+                                    line: a
+                                }) || '';
+
+                                var lotQuantity = Number(invDet.getSublistValue({
+                                    sublistId: 'inventoryassignment',
+                                    fieldId: 'quantity',
+                                    line: a
+                                }));
+
+                                if (serialNum) rows.push({
+                                    partNumber: partNumber,
+                                    vendorPartNumber: vendorPartNumber,
+                                    description: description,
+                                    quantity: lotQuantity * conversionFactor,
+                                    statusText: statusTxt,
+                                    statusVal: statusVal,
+                                    manufacturerName: manufacturerName,
+                                    serialText: serialNum,
+                                    lotText: "",
+                                    poNumber: poNumber
+                                });
+
+                            }
 
                         }
 
