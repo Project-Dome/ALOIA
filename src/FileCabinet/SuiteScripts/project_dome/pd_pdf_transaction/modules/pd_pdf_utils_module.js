@@ -355,6 +355,16 @@ define([
                             PDFParameters["invoiceItems"].push({...itemLine});
                         });
                     } else {
+
+                        let quantity = newRecord.getSublistValue({
+                            sublistId: "item",
+                            fieldId: "quantity",
+                            line: index
+                        });
+
+                        itemLine["quantity"] = Number(quantity) * conversionFactor;
+                        itemLine["totalAmount"] = Number(quantity) * Number(unitPrice);
+
                         PDFParameters["invoiceItems"].push(itemLine);
                     }
 
