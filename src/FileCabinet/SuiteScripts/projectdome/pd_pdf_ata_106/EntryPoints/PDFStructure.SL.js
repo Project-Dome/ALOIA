@@ -174,43 +174,72 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
 
                 // Seriais
                 try {
-                    var invDet = invoice.getSublistSubrecord({sublistId: 'item', fieldId: 'inventorydetail', line: i});
-                    if (invDet) {
+
+                    const inventoryDetailField = invoice.getSublistField({
+                        sublistId: "item",
+                        fieldId: "inventorydetail",
+                        line: i
+                    });
+
+                    if (inventoryDetailField) {
+
+                        var invDet = invoice.getSublistSubrecord({
+                            sublistId: 'item',
+                            fieldId: 'inventorydetail',
+                            line: i
+                        });
 
                         var assCount = invDet.getLineCount({sublistId: 'inventoryassignment'}) || 0;
-                        for (var a = 0; a < assCount; a++) {
 
-                            var issueInvNumId = invDet.getSublistValue({
-                                sublistId: 'inventoryassignment',
-                                fieldId: 'issueinventorynumber',
-                                line: a
+                        if (assCount === 0) {
+
+                            rows.push({
+                                description: description,
+                                quantity: quantity * conversionFactor,
+                                statusText: statusTxt,
+                                statusVal: statusVal,
+                                manufacturerName: manufName,
+                                partNumber: partNumber,
+                                partNumberCustomer: partNumberCustomer,
+                                serialText: "N/A"
                             });
 
-                            if (issueInvNumId) {
+                        } else {
 
-                                var lotQuantity = invDet.getSublistValue({
+                            for (var a = 0; a < assCount; a++) {
+
+                                var issueInvNumId = invDet.getSublistValue({
                                     sublistId: 'inventoryassignment',
-                                    fieldId: 'quantity',
+                                    fieldId: 'issueinventorynumber',
                                     line: a
                                 });
 
-                                var sn = search.lookupFields({
-                                    type: record.Type.INVENTORY_NUMBER,
-                                    id: issueInvNumId,
-                                    columns: ['inventorynumber']
-                                });
+                                if (issueInvNumId) {
 
-                                if (sn && sn.inventorynumber) rows.push({
-                                    description: description,
-                                    quantity: lotQuantity * conversionFactor,
-                                    statusText: statusTxt,
-                                    statusVal: statusVal,
-                                    manufacturerName: manufName,
-                                    partNumber: partNumber,
-                                    partNumberCustomer: partNumberCustomer,
-                                    serialText: escapeXml(sn.inventorynumber)
-                                });
+                                    var lotQuantity = invDet.getSublistValue({
+                                        sublistId: 'inventoryassignment',
+                                        fieldId: 'quantity',
+                                        line: a
+                                    });
 
+                                    var sn = search.lookupFields({
+                                        type: record.Type.INVENTORY_NUMBER,
+                                        id: issueInvNumId,
+                                        columns: ['inventorynumber']
+                                    });
+
+                                    if (sn && sn.inventorynumber) rows.push({
+                                        description: description,
+                                        quantity: lotQuantity * conversionFactor,
+                                        statusText: statusTxt,
+                                        statusVal: statusVal,
+                                        manufacturerName: manufName,
+                                        partNumber: partNumber,
+                                        partNumberCustomer: partNumberCustomer,
+                                        serialText: escapeXml(sn.inventorynumber)
+                                    });
+
+                                }
                             }
                         }
 
