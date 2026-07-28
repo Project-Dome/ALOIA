@@ -34,13 +34,13 @@ define([],
                         
                             <table style="width:100%; margin-top:2pt;">
                                 <tr>
-                                    <td colspan="2" class="align_left">
+                                    <td colspan="2" class="align_center">
                                         <barcode
                                             codetype="code128"
                                             showtext="false"
                                             value="${barcodeValue}"
                                             height="15pt"
-                                            width="160pt"
+                                            width="275pt"
                                         />
                                     </td>
                                 </tr>
@@ -191,6 +191,10 @@ define([],
                             
                             .align_left {
                                 text-align:left
+                            }
+                            
+                            .align_center {
+                                text-align:center
                             }
                             
                             .bold-text {
