@@ -171,6 +171,12 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     line: i
                 }) || '';
 
+                var certNumber = invoice.getSublistValue({
+                    sublistId: 'item',
+                    fieldId: 'custcol_pd_numero_do_certificado', // <- confirmar field ID real
+                    line: i
+                }) || '';
+
                 try {
 
                     const inventoryDetailField = invoice.getSublistField({
@@ -199,9 +205,10 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                                 statusText: statusTxt,
                                 statusVal: statusVal,
                                 manufacturerName: manufacturerName,
-                                serialText: "",
+                                serialText: serialNum, // ou "" dependendo do branch
                                 lotText: "",
-                                poNumber: poNumber
+                                poNumber: poNumber,
+                                certNumber: certNumber
                             });
 
                         } else {
@@ -228,9 +235,10 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                                     statusText: statusTxt,
                                     statusVal: statusVal,
                                     manufacturerName: manufacturerName,
-                                    serialText: serialNum,
+                                    serialText: serialNum, // ou "" dependendo do branch
                                     lotText: "",
-                                    poNumber: poNumber
+                                    poNumber: poNumber,
+                                    certNumber: certNumber
                                 });
 
                             }
@@ -247,9 +255,10 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                             statusText: statusTxt,
                             statusVal: statusVal,
                             manufacturerName: manufacturerName,
-                            serialText: "",
+                            serialText: serialNum, // ou "" dependendo do branch
                             lotText: "",
-                            poNumber: poNumber
+                            poNumber: poNumber,
+                            certNumber: certNumber
                         });
 
                     }
@@ -300,7 +309,7 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     + '<td class="col-center">' + escapeXml(r.statusText || '') + '</td>'
                     + '<td class="col-center">' + escapeXml(r.quantity || '') + '</td>'
                     + '<td class="col-center">' + lotCell + '</td>'
-                    + '<td class="col-center"></td>'  // Cert No
+                    + '<td class="col-center">' + escapeXml(r.certNumber || '') + '</td>'  // Cert No
                     + '<td class="col-center">' + escapeXml(codPo) + '</td>'  // PO Number
                     + '</tr>';
             }
