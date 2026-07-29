@@ -27,24 +27,24 @@ define([
                                          CASE WHEN i.isserialitem = 'T' THEN 'T' ELSE 'F' END AS is_serie,
                                          ROUND(ABS(ia_inv.quantity) / NULLIF(line_uom.conversionrate, 0)) AS qty,
                                          mfg.companyname                               AS manufacturer,
-                                         po.tranid                                      AS po_number,
-                                         To_char(t.trandate, 'MM/DD/YYYY')              AS rec_date,
+                                         po.tranid                                     AS po_number,
+                                         To_char(inv.trandate, 'MM/DD/YYYY')            AS rec_date,
                                          To_char(invn.expirationdate, 'MM/DD/YYYY')     AS exp_date,
                                          item_status.NAME                               AS cond,
                                          line_uom.unitname                              AS uom,
                                          loc.NAME                                       AS location,
-                                         t.custbody_wr                                  AS receiver,
+                                         invn.custitemnumber_pd_wr_line                 AS receiver,
                                          inv.custbody_pd_lastcerifiedagency             AS tagged_by,
                                          inv.custbody_pd_remarks                        AS remark,
                                          customer.companyname                           AS notes_customer,
                                          so.otherrefnum                                 AS notes_po,
-                                         inv.tranid                                     AS notes_invoice,
+                                         inv.tranid                                      AS notes_invoice,
                                          invl.id                                         AS invoice_line_id,
                                          ia_inv.id                                       AS ia_id,
-                                         t.trandate                                      AS rec_date_raw,
+                                         inv.trandate                                    AS rec_date_raw,
                                          ROW_NUMBER() OVER (
                PARTITION BY invl.id, ia_inv.id
-               ORDER BY t.trandate DESC NULLS LAST
+               ORDER BY inv.trandate DESC NULLS LAST
            ) AS rn
                                   FROM   TRANSACTION inv
                                              INNER JOIN transactionline invl
@@ -67,21 +67,6 @@ define([
                                              LEFT JOIN TRANSACTION po
                                                        ON po.id = ptl_so_po.nextdoc
                                                            AND po.type = 'PurchOrd'
-                                             LEFT JOIN transactionline pol
-                                                       ON pol.id = ptl_so_po.nextline
-                                                           AND pol.TRANSACTION = po.id
-                                                           AND pol.mainline = 'F'
-                                             LEFT JOIN previoustransactionlinelink ptl_po_rcpt
-                                                       ON ptl_po_rcpt.previousdoc = po.id
-                                                           AND ptl_po_rcpt.previousline = pol.id
-                                                           AND ptl_po_rcpt.linktype = 'ShipRcpt'
-                                             LEFT JOIN TRANSACTION t
-                                                       ON t.id = ptl_po_rcpt.nextdoc
-                                                           AND t.type = 'ItemRcpt'
-                                             LEFT JOIN transactionline tl
-                                                       ON tl.id = ptl_po_rcpt.nextline
-                                                           AND tl.TRANSACTION = t.id
-                                                           AND tl.mainline = 'F'
                                              LEFT JOIN item i
                                                        ON i.id = invl.item
                                              LEFT JOIN inventorynumber invn
@@ -89,11 +74,11 @@ define([
                                              LEFT JOIN unitstypeuom line_uom
                                                        ON line_uom.internalid = invl.units
                                              LEFT JOIN customrecord_aae_part_number_spec_vend pn_number
-                                                       ON pn_number.id = pol.custcol_pd_partnumbervendor
+                                                       ON pn_number.id = invl.custcol_pd_partnumbervendor
                                              LEFT JOIN customlist_pd_aae_status_item item_status
-                                                       ON item_status.id = tl.custcol_pd_aae_status_item
+                                                       ON item_status.id = invl.custcol_pd_aae_status_item
                                              LEFT JOIN location loc
-                                                       ON loc.id = tl.location
+                                                       ON loc.id = invl.location
                                              LEFT JOIN customer
                                                        ON customer.id = so.entity
                                              LEFT JOIN vendor mfg
