@@ -95,7 +95,7 @@ define([],
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="font_medium align_left">
-                                        <span class="bold-text">EXP DATE:</span> ${result.exp_date || ""}
+                                        <span class="bold-text">EXP DATE:</span> ${result.exp_date || "N/A"}
                                     </td>
                                 </tr>
                                 <tr>
