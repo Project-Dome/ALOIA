@@ -51,14 +51,16 @@ define([
                     "inventorynumber",
                     "expirationdate",
                     "custitemnumber_aln_manufactured_date",
-                    "custitemnumber_aae_manufacturerdetail"
+                    "custitemnumber_aae_manufacturerdetail",
+                    "custitemnumber_pd_mir_manufacturer_addr_ls"
                 ]
             });
             return {
                 inventorynumber: inventoryDetailLookup["inventorynumber"],
                 expirationdate: inventoryDetailLookup["expirationdate"],
                 custitemnumber_aln_manufactured_date: inventoryDetailLookup["custitemnumber_aln_manufactured_date"],
-                manufacturer: inventoryDetailLookup["custitemnumber_aae_manufacturerdetail"][0]?.text
+                manufacturer: inventoryDetailLookup["custitemnumber_aae_manufacturerdetail"][0]?.text,
+                manuAdress: inventoryDetailLookup["custitemnumber_pd_mir_manufacturer_addr_ls"]
             }
         }
 

@@ -351,12 +351,16 @@ define([
                             itemLine["quantity"] = Number(lot.quantity) * conversionFactor;
                             itemLine["totalAmount"] = Number(lot.quantity) * Number(unitPrice);
 
-                            // Manufacturer is lot-specific: prefer the lot's own manufacturer
-                            // over the line-level one so lines with mixed-manufacturer lots
-                            // each show their own respective manufacturer.
+                            // Manufacturer and its address are lot-specific: prefer the lot's
+                            // own values over the line-level ones so lines with mixed-manufacturer
+                            // lots each show their own respective manufacturer/address.
                             const lotManufacturer = lot.manufacturer || manufacturer;
                             if (lotManufacturer) itemLine["manufacturer"] = lotManufacturer;
                             else delete itemLine["manufacturer"];
+
+                            const lotManuAdress = lot.manuAdress || manuAdress;
+                            if (lotManuAdress) itemLine["manuAdress"] = lotManuAdress.replaceAll(/[\r\n]+/g, " ");
+                            else delete itemLine["manuAdress"];
 
                             lot = formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate)
                             itemLine["inventoryNumber"] = lot;
@@ -480,6 +484,7 @@ define([
                                 : null,
                             quantity: lotQuantity,
                             manufacturer: lotData.manufacturer,
+                            manuAdress: lotData.manuAdress,
                         });
                     }
                 }
