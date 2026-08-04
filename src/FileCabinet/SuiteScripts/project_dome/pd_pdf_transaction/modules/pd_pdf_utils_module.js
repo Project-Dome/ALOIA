@@ -350,6 +350,14 @@ define([
                         inventoryData.forEach(lot => {
                             itemLine["quantity"] = Number(lot.quantity) * conversionFactor;
                             itemLine["totalAmount"] = Number(lot.quantity) * Number(unitPrice);
+
+                            // Manufacturer is lot-specific: prefer the lot's own manufacturer
+                            // over the line-level one so lines with mixed-manufacturer lots
+                            // each show their own respective manufacturer.
+                            const lotManufacturer = lot.manufacturer || manufacturer;
+                            if (lotManufacturer) itemLine["manufacturer"] = lotManufacturer;
+                            else delete itemLine["manufacturer"];
+
                             lot = formatLotLabel(lot.inventoryNumber, lot.manufacturedDate, lot.expirationDate)
                             itemLine["inventoryNumber"] = lot;
                             PDFParameters["invoiceItems"].push({...itemLine});
@@ -471,6 +479,7 @@ define([
                                 ? new Date(lotData.custitemnumber_aln_manufactured_date).toISOString()
                                 : null,
                             quantity: lotQuantity,
+                            manufacturer: lotData.manufacturer,
                         });
                     }
                 }
