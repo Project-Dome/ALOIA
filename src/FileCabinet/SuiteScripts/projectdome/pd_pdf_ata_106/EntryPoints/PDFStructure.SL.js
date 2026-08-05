@@ -290,7 +290,7 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
                     + '<td class="center-cell">' + (i + 1) + '</td>'
                     + '<td>' + escapeXml(desc) + '</td>'
                     + '<td>' + escapeXml(r.manufacturerName || '') + '<br/>' + escapeXml(r.partNumberCustomer || '') + '</td>'
-                    + '<td class="center-cell">' + escapeXml(r.quantity || '') + '</td>'
+                    + '<td class="center-cell" style="white-space: nowrap;">' + escapeXml(formatQuantity(r.quantity)) + '</td>'
                     + '<td class="center-cell">' + (r.serialText || '') + '</td>'
                     + '<td class="center-cell">' + escapeXml(r.statusText || '') + '</td>'
                     + '</tr>';
@@ -524,6 +524,19 @@ define(['N/record', 'N/log', 'N/render', 'N/format', 'N/file', 'N/runtime', 'N/s
             return String(s || '')
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+        }
+
+        // Round Half Up (ex.: 86.4362 -> 86.44 / 86.4321 -> 86.43). toPrecision(15) remove ruído de ponto flutuante antes do Math.round.
+        function roundHalfUp(value, decimals) {
+            var num = Number(value);
+            if (isNaN(num)) return value;
+            var factor = Math.pow(10, decimals);
+            return Math.round(Number((num * factor).toPrecision(15))) / factor;
+        }
+
+        function formatQuantity(value) {
+            if (value === '' || value === null || value === undefined) return '';
+            return roundHalfUp(value, 2).toFixed(2);
         }
 
         function onRequest(context) {
