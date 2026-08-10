@@ -25,7 +25,7 @@ define([
                                          invl.memo                                     AS description,
                                          invn.inventorynumber                          AS sn,
                                          CASE WHEN i.isserialitem = 'T' THEN 'T' ELSE 'F' END AS is_serie,
-                                         ROUND(ABS(ia_inv.quantity) / NULLIF(line_uom.conversionrate, 0)) AS qty,
+                                         ABS(ia_inv.quantity) / NULLIF(line_uom.conversionrate, 0) AS qty,
                                          mfg.companyname                               AS manufacturer,
                                          po.tranid                                     AS po_number,
                                          To_char(inv.trandate, 'MM/DD/YYYY')            AS rec_date,

@@ -123,13 +123,13 @@ define([],
                                         <barcode
                                             codetype="code128"
                                             showtext="false"
-                                            value="${escapeXml(result.qty)}"
+                                            value="${escapeXml(formatQuantity(result.qty))}"
                                             height="10pt"
                                             width="50pt"
                                         />
-                            
+
                                         <div class="font_medium">
-                                            <span class="bold-text">Qty:</span> ${escapeXml(result.qty)}
+                                            <span class="bold-text">Qty:</span> ${escapeXml(formatQuantity(result.qty))}
                                         </div>
                             
                                     </td>
@@ -225,6 +225,19 @@ define([],
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&apos;');
+        }
+
+        // Round Half Up (ex.: 86.4362 -> 86.44 / 86.4321 -> 86.43). toPrecision(15) remove ruído de ponto flutuante antes do Math.round.
+        function roundHalfUp(value, decimals) {
+            const num = Number(value);
+            if (isNaN(num)) return value;
+            const factor = Math.pow(10, decimals);
+            return Math.round(Number((num * factor).toPrecision(15))) / factor;
+        }
+
+        function formatQuantity(value) {
+            if (value === '' || value === null || value === undefined) return '';
+            return roundHalfUp(value, 2).toFixed(2);
         }
 
         function sanitizeBarcodeValue(str) {
