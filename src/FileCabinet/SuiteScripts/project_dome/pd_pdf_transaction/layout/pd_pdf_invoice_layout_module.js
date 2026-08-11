@@ -783,7 +783,7 @@ define([
                 dynamicHtml += '<tr><td colspan="2">' + escapeXml(itemObjectIndex.description) + '</td></tr>';
 
             if (itemObjectIndex.hasOwnProperty("inventoryNumber")) {
-                dynamicHtml += '<tr><td colspan="2">Lot/Batch#: ' + escapeXml(itemObjectIndex["inventoryNumber"]) + '</td></tr>';
+                dynamicHtml += '<tr><td colspan="2">Lot/Batch/Serial#: ' + escapeXml(itemObjectIndex["inventoryNumber"]) + '</td></tr>';
             }
 
             if (itemObjectIndex.hasOwnProperty("manufacturer"))
