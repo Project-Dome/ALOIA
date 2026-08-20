@@ -20,7 +20,7 @@ define([],
 
                 const barcodeValue = sanitizeBarcodeValue(
                     result.notes_invoice && result.pn
-                        ? `${result.notes_invoice}_${result.pn}`
+                        ? `${result.notes_invoice}${result.pn}`
                         : (result.notes_invoice || result.pn || '0')
                 );
 
@@ -36,9 +36,9 @@ define([],
                                 <tr>
                                     <td colspan="2" class="align_center">
                                         <barcode
-                                            codetype="code128"
+                                            codetype="code39"
                                             showtext="false"
-                                            value="${barcodeValue}"
+                                            value="${barcodeValue.toUpperCase()}"
                                             height="15pt"
                                             width="275pt"
                                         />
@@ -121,7 +121,7 @@ define([],
                                     <td width="70pt" valign="top">
                             
                                         <barcode
-                                            codetype="code128"
+                                            codetype="code39"
                                             showtext="false"
                                             value="${escapeXml(formatQuantity(result.qty))}"
                                             height="10pt"
