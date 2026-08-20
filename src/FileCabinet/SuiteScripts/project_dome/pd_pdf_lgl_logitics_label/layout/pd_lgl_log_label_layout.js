@@ -39,8 +39,8 @@ define([],
                                             codetype="code39"
                                             showtext="false"
                                             value="${barcodeValue.toUpperCase()}"
-                                            height="15pt"
-                                            width="275pt"
+                                            height="30pt"
+                                            width="150pt"
                                         />
                                     </td>
                                 </tr>
@@ -124,7 +124,7 @@ define([],
                                             codetype="code39"
                                             showtext="false"
                                             value="${escapeXml(formatQuantity(result.qty))}"
-                                            height="10pt"
+                                            height="15pt"
                                             width="50pt"
                                         />
 
