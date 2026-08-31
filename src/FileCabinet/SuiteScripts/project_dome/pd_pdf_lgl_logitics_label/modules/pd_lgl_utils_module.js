@@ -19,7 +19,7 @@ define([
             return query.runSuiteQL({
                 query: (`SELECT pn, description, sn, is_serie, qty, manufacturer, po_number, rec_date,
                                 exp_date, cond, uom, location, receiver, tagged_by, remark,
-                                notes_customer, notes_po, notes_invoice
+                                notes_customer, notes_po, notes_invoice, invoice_line_id, ia_id, invoice_id
                          FROM (
                                   SELECT pn_number.NAME                                AS pn,
                                          invl.memo                                     AS description,
@@ -42,6 +42,7 @@ define([
                                          invl.id                                         AS invoice_line_id,
                                          ia_inv.id                                       AS ia_id,
                                          inv.trandate                                    AS rec_date_raw,
+                                         inv.id                                         AS invoice_id,
                                          ROW_NUMBER() OVER (
                PARTITION BY invl.id, ia_inv.id
                ORDER BY inv.trandate DESC NULLS LAST
