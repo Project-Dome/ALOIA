@@ -18,11 +18,7 @@ define([],
 
             parameters.forEach((result, index) => {
 
-                const barcodeValue = sanitizeBarcodeValue(
-                    result.notes_invoice && result.pn
-                        ? `${result.notes_invoice}${result.pn}`
-                        : (result.notes_invoice || result.pn || '0')
-                );
+                const barcodeValue = buildBarcodeValue(result.invoice_id, result.ia_id);
 
                 html += `<div style="
                             width:300pt;
@@ -36,11 +32,11 @@ define([],
                                 <tr>
                                     <td colspan="2" class="align_center">
                                         <barcode
-                                            codetype="code39"
+                                            codetype="code128"
                                             showtext="false"
                                             value="${barcodeValue.toUpperCase()}"
-                                            height="30pt"
-                                            width="150pt"
+                                            height="35pt"
+                                            width="180pt"
                                         />
                                     </td>
                                 </tr>
@@ -121,11 +117,11 @@ define([],
                                     <td width="70pt" valign="top">
                             
                                         <barcode
-                                            codetype="code39"
+                                            codetype="code128"
                                             showtext="false"
                                             value="${escapeXml(formatQuantity(result.qty))}"
-                                            height="15pt"
-                                            width="50pt"
+                                            height="20pt"
+                                            width="70pt"                                        
                                         />
 
                                         <div class="font_medium">
@@ -237,18 +233,20 @@ define([],
 
         function formatQuantity(value) {
             if (value === '' || value === null || value === undefined) return '';
-            return roundHalfUp(value, 2).toFixed(2);
+            return Number(roundHalfUp(value, 2).toFixed(2));
         }
 
         function sanitizeBarcodeValue(str) {
-            if (!str) return '';
-            return String(str)
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .toUpperCase()
-                .replace(/[^A-Z0-9\-_\/\. ]/g, '');
+            if (!str && str !== 0) return '';
+            return String(str).replace(/[^0-9]/g, '');
         }
 
+        function buildBarcodeValue(invoiceId, iaId) {
+            const inv = sanitizeBarcodeValue(invoiceId);
+            const lot = sanitizeBarcodeValue(iaId);
+            if (inv && lot) return `${inv}-${lot}`;
+            return inv || lot || '0';
+        }
         return handler;
 
     });
